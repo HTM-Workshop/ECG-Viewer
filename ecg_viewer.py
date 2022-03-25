@@ -40,7 +40,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.com_refresh()  
         
         self.graph.showGrid(True, True, alpha = 0.5)  
-        
+        self.mean = 0 
+        self.invert = 1
+        self.calibrating = self.value_history_max
     def com_refresh(self):
         self.port_combo_box.clear()
         self.available_ports = serial.tools.list_ports.comports()
@@ -63,6 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ser.flushInput()
                 self.capture_timer.start(self.capture_rate_ms)
                 self.hr_timer.start(1000)
+                self.calibrating = self.value_history_max
         # re-add the try and uncomment below later
             except Exception as e:
                 error_message = QtWidgets.QMessageBox()
@@ -98,26 +101,37 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             buf = buf.strip('\n').strip('\r')
             self.current_reading = float(buf)
-            self.value_history.append(self.current_reading)
-            if(len(self.value_history) > self.value_history_max):
-                self.value_history.pop(0)
+            self.value_history.append(self.invert * self.current_reading)
+            self.value_history.pop(0)
         except:
             pass
+        if(self.calibrating > 0):
+            self.calibrating = self.calibrating - 1
+        elif(self.calibrating == 0):
+            print("CALIBRATING")
+            min_delta = self.mean - min(self.value_history)
+            max_delta = max(self.value_history) - self.mean
+            if(min_delta > max_delta):
+                self.invert = -1
+                print("CAL INVERT SET")
+                self.statusBar.showMessage('Inverting input signal')   
+                self.reset_graph()
+            else:
+                self.invert = 1
+            self.calibrating = -1
         self.draw_graph()
     def draw_graph(self):
-        #b, a = signal.butter(2, 1, 'hp', fs = 30)
-        #filtered = signal.filtfilt(b, a, self.value_history)
         red_pen = pg.mkPen('r')
         green_pen = pg.mkPen('g')
         yellow_pen = pg.mkPen('y')
         self.graph.clear()
-        #self.graph.plot([*range(len(filtered) - 25)], filtered[0:175], pen = red_pen)
+        self.mean = stat.mean(self.value_history)
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
         self.graph.plot([*range(len(self.value_history))], self.value_history, pen = red_pen)
         if(self.show_track.isChecked()):
             center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = yellow_pen)
             self.graph.addItem(center_line)
-            mean = pg.InfiniteLine(pos = stat.mean(self.value_history), angle = 0, movable = False, pen = green_pen)
+            mean = pg.InfiniteLine(pos = self.mean, angle = 0, movable = False, pen = green_pen)
             self.graph.addItem(mean)
             peaks = signal.find_peaks(
                         self.value_history, 
