@@ -6,16 +6,15 @@ import statistics as stat
 import sys, os, math, serial, time, numpy
 import serial.tools.list_ports
 from scipy import signal
+from ecg_viewer_window import Ui_MainWindow
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        self.current_reading = 0
-        self.value_history_max = 200
-        self.value_history = [0] * self.value_history_max
+        self.setupUi(self)
 
         # Load the UI Page
-        uic.loadUi('ecg_viewer_window.ui', self)            
+        #uic.loadUi('ecg_viewer_window.pyui', self)            
                 
         # Capture timer
         self.capture_timer = QtCore.QTimer()
@@ -25,12 +24,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # heart rate timer
         self.hr_timer = QtCore.QTimer()
         self.hr_timer.timeout.connect(self.update_hr)
-
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
         self.button_connect.clicked.connect(self.com_connect)  
         self.button_reset.clicked.connect(self.reset_graph)
+        self.button_run.clicked.connect(self.run_toggle)
+        self.button_run.setDisabled(True)
         
         # connection status
         self.ser = None
@@ -39,18 +39,33 @@ class MainWindow(QtWidgets.QMainWindow):
         # perform initial com port check
         self.com_refresh()  
         
+        # set graph properties
         self.graph.showGrid(True, True, alpha = 0.5)  
+        
+        # data variables
+        self.current_reading = 0
+        self.value_history_max = 200
+        self.value_history = [0] * self.value_history_max
         self.mean = 0 
-        self.invert = 1
+        self.invert_modifier = 1
         self.calibrating = self.value_history_max
+        self.peaks = list()
+
+        # run state
+        self.run = True
+    
+    # refresh available devices, store in dropdown menu storage    
     def com_refresh(self):
         self.port_combo_box.clear()
         self.available_ports = serial.tools.list_ports.comports()
         for i in self.available_ports:
             self.port_combo_box.addItem(i.device)  
         com_count = self.port_combo_box.count()    
-           
+    
+    # connect to device
     def com_connect(self):
+        self.run = True
+        self.button_run.setText("Stop")
         if(self.ser == None):
             try:
                 self.com_port = self.port_combo_box.currentText()
@@ -66,6 +81,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.capture_timer.start(self.capture_rate_ms)
                 self.hr_timer.start(1000)
                 self.calibrating = self.value_history_max
+                self.invert_modifier = 1
+                self.button_run.setDisabled(False)
         # re-add the try and uncomment below later
             except Exception as e:
                 error_message = QtWidgets.QMessageBox()
@@ -74,6 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 error_message.exec_()
                 print(e)
         else:
+            self.button_run.setDisabled(True)
             self.capture_timer.stop()
             self.hr_timer.stop()
             self.ser.close()
@@ -101,25 +119,30 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             buf = buf.strip('\n').strip('\r')
             self.current_reading = float(buf)
-            self.value_history.append(self.invert * self.current_reading)
+            assert(self.invert_modifier == 1 or self.invert_modifier == -1)
+            self.value_history.append(self.invert_modifier * self.current_reading)
             self.value_history.pop(0)
         except:
             pass
+            
+        # Perform calibration. Capture data as normal until self.calibrating counter is zero.
+        # If the peak value is below the mean, invert the signal.
         if(self.calibrating > 0):
             self.calibrating = self.calibrating - 1
         elif(self.calibrating == 0):
-            print("CALIBRATING")
             min_delta = self.mean - min(self.value_history)
             max_delta = max(self.value_history) - self.mean
             if(min_delta > max_delta):
-                self.invert = -1
-                print("CAL INVERT SET")
+                self.invert_modifier = -1
                 self.statusBar.showMessage('Inverting input signal')   
-                self.reset_graph()
             else:
-                self.invert = 1
+                self.invert_modifier = 1
             self.calibrating = -1
+            
+        # update graph
         self.draw_graph()
+        
+    # Clear and refresh graph 
     def draw_graph(self):
         red_pen = pg.mkPen('r')
         green_pen = pg.mkPen('g')
@@ -127,42 +150,75 @@ class MainWindow(QtWidgets.QMainWindow):
         self.graph.clear()
         self.mean = stat.mean(self.value_history)
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
-        self.graph.plot([*range(len(self.value_history))], self.value_history, pen = red_pen)
+        self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
+        
+        # Visually shows signal tracking information. SLOW
         if(self.show_track.isChecked()):
+            center = self.detect_peaks()
             center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = yellow_pen)
             self.graph.addItem(center_line)
-            mean = pg.InfiniteLine(pos = self.mean, angle = 0, movable = False, pen = green_pen)
+            mean = pg.InfiniteLine(pos = self.mean, angle = 0, movable = False, pen = red_pen)
             self.graph.addItem(mean)
-            peaks = signal.find_peaks(
-                        self.value_history, 
-                        prominence = 20,
-                        height = center,
-                        distance = 30,
-                    )[0]
-            for p in peaks:
+
+            # display a vertical line intersecting each detected peak
+            for p in self.peaks:
                 l = pg.InfiniteLine(pos = p, angle = 90, movable = False, pen = pg.mkPen('c'))
-                self.graph.addItem(l)            
+                self.graph.addItem(l)  
+            
+            # display distance 
+            for p in self.peaks:
+                l = pg.InfiniteLine(pos = p + 15, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
+                self.graph.addItem(l) 
+    
+    # Update the heart rate LCD reading. 
+    # Converts the average time between peaks to frequency 
+    # (1 / (<avg peak distance> * <capture rate in ms>)) * 60 * 1000
     def update_hr(self):
-        center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
-        peaks = signal.find_peaks(
-                    self.value_history, 
-                    prominence = 20,
-                    height = center,
-                    distance = 30,
-                )[0]
+        self.detect_peaks()
         times = list()
-        if(len(peaks) > 1):
-            for i, v in enumerate(peaks):
-                if(i < len(peaks) - 1):
-                    times.append(peaks[i + 1] - peaks[i])
+        if(len(self.peaks) > 1):
+            for i, v in enumerate(self.peaks):
+                if(i < len(self.peaks) - 1):
+                    times.append(self.peaks[i + 1] - self.peaks[i])
         if(len(times)):
             f = (1 / (sum(times) / len(times) * self.capture_rate_ms))
             self.lcdNumber.display(int(f * 60 * 1000))
         else:
             self.lcdNumber.display(0)
-            
+    
+    # clear all history, including calibration
     def reset_graph(self):
         self.value_history = [0] * self.value_history_max
+        self.calibrating = self.value_history_max
+        self.invert_modifier = 1
+    
+    # detect peaks using scipy. 
+    #   prominence: the threshold the peak needs to be at, relative to the surrounding samples
+    #   distance  : distance between the previous peak to the next peak
+    # returns absolute center of recorded values
+    def detect_peaks(self, sig_prominence = 20, sig_distance = 13):
+        center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
+        self.peaks = signal.find_peaks(
+                    self.value_history, 
+                    prominence = sig_prominence,
+                    height = center,
+                    distance = sig_distance,
+                )[0]
+        return center
+    
+    # toggle capture on or off
+    def run_toggle(self):
+        if(self.ser != None):
+            if(self.run == True):
+                self.run = False
+                self.statusBar.showMessage('Capture stopped')  
+                self.button_run.setText("Run")
+                self.capture_timer.stop()
+            else:
+                self.run = True
+                self.statusBar.showMessage('Capture running') 
+                self.button_run.setText("Stop")
+                self.capture_timer.start(self.capture_rate_ms)
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
