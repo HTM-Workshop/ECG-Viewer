@@ -23,7 +23,11 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>ECG Viewer</string>
+   <string>DIYECG Viewer</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icons8-heart-monitor-100.png</normaloff>icons8-heart-monitor-100.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="PlotWidget" name="graph" native="true">
@@ -32,7 +36,7 @@
       <x>10</x>
       <y>10</y>
       <width>781</width>
-      <height>361</height>
+      <height>421</height>
      </rect>
     </property>
    </widget>
@@ -40,12 +44,28 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>380</y>
+      <y>440</y>
       <width>781</width>
-      <height>221</height>
+      <height>161</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="1">
+      <widget class="QLCDNumber" name="lcdNumber">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>115</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
       <widget class="QLabel" name="label">
        <property name="font">
@@ -62,40 +82,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QPushButton" name="button_refresh">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="button_connect">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Connect</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+     <item row="1" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
      </item>
      <item row="2" column="0">
-      <widget class="QComboBox" name="port_combo_box"/>
-     </item>
-     <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QCheckBox" name="show_track">
@@ -129,21 +119,53 @@
        </item>
       </layout>
      </item>
-     <item row="3" column="1">
-      <widget class="QLCDNumber" name="lcdNumber">
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>115</height>
-        </size>
+     <item row="3" column="0">
+      <widget class="QFrame" name="">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Device:</string>
-       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="4" column="1">
+           <widget class="QPushButton" name="button_connect">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Connect</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QPushButton" name="button_refresh">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QComboBox" name="port_combo_box"/>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Device:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
