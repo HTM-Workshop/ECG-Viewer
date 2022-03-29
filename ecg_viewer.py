@@ -19,14 +19,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 15
+        self.capture_rate_ms = 20
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_timer_ms = 1 / (60 / 1000)
+        self.graph_frame_rate = 60                                  # change to adjust refresh rate
+        self.graph_timer_ms = 1 / (self.graph_frame_rate / 1000)
         
         # heart rate timer
         self.hr_timer = QtCore.QTimer()
@@ -184,7 +185,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 l = pg.InfiniteLine(pos = p, angle = 90, movable = False)
                 self.graph.addItem(l)  
             
-            # display distance 
+            # display holdoff  
             for p in self.peaks[::-1][1:2]:
                 l = pg.InfiniteLine(pos = p + 15, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
                 self.graph.addItem(l) 
@@ -198,11 +199,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if(len(self.peaks) > 1):
             for i, v in enumerate(self.peaks):
                 if(i != 0):
-                    #times.append(self.peaks[i + 1] - self.peaks[i])
                     last = self.value_history_timed[self.peaks[i - 1]][1]
                     times.append(self.value_history_timed[v][1] - last)
         if(len(times)):
-            #f = (1 / (sum(times) / len(times) * self.capture_rate_ms))
             f = (1 / (sum(times) / len(times)))
             self.lcdNumber.display(f * 1000 * 60)
         else:
@@ -219,8 +218,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     # detect peaks using scipy. 
     #   prominence: the threshold the peak needs to be at, relative to the surrounding samples
-    #   distance  : distance between the previous peak to the next peak
-    # returns absolute center of recorded values
+    #   distance  : (AKA holdoff) minimum required distance between the previous peak to the next peak
+    #   height    : minimum height of peak to be accepted
+    # modifies:  stores index of peaks in self.peaks 
+    # returns :  center (not average) of recorded values
     def detect_peaks(self, sig_prominence = 20, sig_distance = 13):
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
         self.peaks = signal.find_peaks(
