@@ -19,7 +19,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 20
+        self.capture_rate_ms = 15
+        self.capture_timer_qt = QtCore.QElapsedTimer()
+        self.capture_timer_qt.start()
+        
+        # graph timer
+        self.graph_timer = QtCore.QTimer()
+        self.graph_timer.timeout.connect(self.draw_graph)
+        self.graph_timer_ms = 1 / (60 / 1000)
         
         # heart rate timer
         self.hr_timer = QtCore.QTimer()
@@ -50,6 +57,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
         self.peaks = list()
+        
+        # data over time storage
+        self.value_history_timed = list()
+        self.reset_graph()
 
         # run state
         self.run = True
@@ -80,6 +91,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.ser.flushInput()
                 self.capture_timer.start(self.capture_rate_ms)
                 self.hr_timer.start(1000)
+                self.graph_timer.start(self.graph_timer_ms)
                 self.calibrating = self.value_history_max
                 self.invert_modifier = 1
                 self.button_run.setDisabled(False)
@@ -94,6 +106,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.button_run.setDisabled(True)
             self.capture_timer.stop()
             self.hr_timer.stop()
+            self.graph_timer.stop()
             self.ser.close()
             self.ser = None
             self.button_refresh.setDisabled(False)
@@ -109,8 +122,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.com_connect()
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setText(str(e))
-            msg.setWindowTitle("Notice")
+            msg.setText("Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n" + str(e))
+            msg.setWindowTitle("Connection Error")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             msg.exec_()
         buf = ''
@@ -120,18 +133,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             buf = buf.strip('\n').strip('\r')
             self.current_reading = float(buf)
             assert(self.invert_modifier == 1 or self.invert_modifier == -1)
-            self.value_history.append(self.invert_modifier * self.current_reading)
+            if(self.current_reading < 400):
+                self.ser.flush()
+                return
+            val = self.invert_modifier * self.current_reading
+            self.value_history.append(val)
+            self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
+            self.value_history_timed.pop(0)
             self.value_history.pop(0)
-        except:
-            pass
+        except Exception as e:
+            print(e)
             
         # Perform calibration. Capture data as normal until self.calibrating counter is zero.
         # If the peak value is below the mean, invert the signal.
         if(self.calibrating > 0):
             self.calibrating = self.calibrating - 1
         elif(self.calibrating == 0):
-            min_delta = self.mean - min(self.value_history)
-            max_delta = max(self.value_history) - self.mean
+            min_delta = self.mean - min(self.value_history[50:100])
+            max_delta = max(self.value_history[50:100]) - self.mean
             if(min_delta > max_delta):
                 self.invert_modifier = -1
                 self.statusBar.showMessage('Inverting input signal')   
@@ -140,7 +159,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.calibrating = -1
             
         # update graph
-        self.draw_graph()
+        #self.draw_graph()
         
     # Clear and refresh graph 
     def draw_graph(self):
@@ -161,12 +180,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.graph.addItem(mean)
 
             # display a vertical line intersecting each detected peak
-            for p in self.peaks:
-                l = pg.InfiniteLine(pos = p, angle = 90, movable = False, pen = pg.mkPen('c'))
+            for p in self.peaks[::-1][0:2]:
+                l = pg.InfiniteLine(pos = p, angle = 90, movable = False)
                 self.graph.addItem(l)  
             
             # display distance 
-            for p in self.peaks:
+            for p in self.peaks[::-1][1:2]:
                 l = pg.InfiniteLine(pos = p + 15, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
                 self.graph.addItem(l) 
     
@@ -178,11 +197,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         times = list()
         if(len(self.peaks) > 1):
             for i, v in enumerate(self.peaks):
-                if(i < len(self.peaks) - 1):
-                    times.append(self.peaks[i + 1] - self.peaks[i])
+                if(i != 0):
+                    #times.append(self.peaks[i + 1] - self.peaks[i])
+                    last = self.value_history_timed[self.peaks[i - 1]][1]
+                    times.append(self.value_history_timed[v][1] - last)
         if(len(times)):
-            f = (1 / (sum(times) / len(times) * self.capture_rate_ms))
-            self.lcdNumber.display(int(f * 60 * 1000))
+            #f = (1 / (sum(times) / len(times) * self.capture_rate_ms))
+            f = (1 / (sum(times) / len(times)))
+            self.lcdNumber.display(f * 1000 * 60)
         else:
             self.lcdNumber.display(0)
     
@@ -191,6 +213,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.value_history = [0] * self.value_history_max
         self.calibrating = self.value_history_max
         self.invert_modifier = 1
+        self.value_history_timed = list()
+        for i in range(self.value_history_max):
+            self.value_history_timed.append([0, -1])
     
     # detect peaks using scipy. 
     #   prominence: the threshold the peak needs to be at, relative to the surrounding samples
