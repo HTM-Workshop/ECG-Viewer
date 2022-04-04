@@ -26,8 +26,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_frame_rate = 60                                  # change to adjust refresh rate
-        self.graph_timer_ms = 1 / (self.graph_frame_rate / 1000)
+        self.graph_frame_rate = 30                                 # change to adjust refresh rate
+        self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
         # heart rate timer
         self.hr_timer = QtCore.QTimer()
@@ -80,6 +80,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_run.setText("Stop")
         if(self.ser == None):
             try:
+                self.statusBar.showMessage("Connecting...")
                 self.com_port = self.port_combo_box.currentText()
                 if(self.com_port == ''):
                     self.statusBar.showMessage('No device selected!')
@@ -134,9 +135,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             buf = buf.strip('\n').strip('\r')
             self.current_reading = float(buf)
             assert(self.invert_modifier == 1 or self.invert_modifier == -1)
-            if(self.current_reading < 400):
-                self.ser.flush()
-                return
+            #if(self.current_reading < 20):
+            #    self.ser.flush()
+            #    return
             val = self.invert_modifier * self.current_reading
             self.value_history.append(val)
             self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
