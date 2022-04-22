@@ -5,6 +5,7 @@ import pyqtgraph as pg
 import statistics as stat
 import sys, os, math, serial, time, numpy
 import serial.tools.list_ports
+from playsound import playsound
 from scipy import signal
 from ecg_viewer_window import Ui_MainWindow
 
@@ -58,13 +59,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
         self.peaks = list()
-        
+
+        # run state
+        self.run = True
+
+        # ecg rate alarm limits
+        self.rate_alarm_max = 120
+        self.rate_alarm_min = 40
+        self.rate_alarm_history = [80] * 3
+        self.rate_alarm_active = False
+        self.rate_alarm_muted  = False
+
         # data over time storage
         self.value_history_timed = list()
         self.reset_graph()
 
-        # run state
-        self.run = True
     
     # refresh available devices, store in dropdown menu storage    
     def com_refresh(self):
@@ -204,12 +213,43 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     times.append(self.value_history_timed[v][1] - last)
         if(len(times)):
             f = (1 / (sum(times) / len(times)))
-            self.lcdNumber.display(f * 1000 * 60)
+            rate = f * 1000 * 60
+            self.lcdNumber.display(rate)
+
+            # update heart rate history
+            self.rate_alarm_history.append(rate)
+            self.rate_alarm_history.pop(0)
+            
+            # check if rate alarm has been tripped or reset
+            avg = math.floor(stat.mean(self.rate_alarm_history))
+            if(self.rate_alarm_active == False):
+                if(avg > self.rate_alarm_max):
+                    self.rate_alarm_active = True
+                    self.alarm_on("MAX RATE ALARM")
+                if(self.rate_alarm_min > avg):
+                    self.rate_alarm_active = True
+                    self.alarm_on("MIN RATE ALARM")     # placeholder
+            else:
+                if(avg <= self.rate_alarm_max and self.rate_alarm_min <= avg):
+                    self.rate_alarm_active = False 
+                    self.alarm_off()
+
         else:
             self.lcdNumber.display(0)
-    
+
+
+    def alarm_on(self, text):
+        self.alarm_window.setStyleSheet("QFrame { background-color: red }")
+        self.alarm_text.setText(text)
+
+    def alarm_off(self):
+        self.alarm_window.setStyleSheet("QFrame { background-color: white }")
+        self.alarm_text.setText("")
+
     # clear all history, including calibration
     def reset_graph(self):
+        self.alarm_off()
+        self.rate_alarm_active = False 
         self.value_history = [0] * self.value_history_max
         self.calibrating = self.value_history_max
         self.invert_modifier = 1

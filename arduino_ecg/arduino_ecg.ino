@@ -1,6 +1,6 @@
 void setup(void) {
     Serial.begin(115200);
-    analogReference(INTERNAL);
+    //analogReference(INTERNAL);
 }
 
 void loop(void) {
