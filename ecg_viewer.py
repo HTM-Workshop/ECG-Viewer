@@ -223,14 +223,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # check if rate alarm has been tripped or reset
             avg = math.floor(stat.mean(self.rate_alarm_history))
             if(self.rate_alarm_active == False):
-                if(avg > self.high_limit_box.value):
+                if(avg > self.high_limit_box.value()):
                     self.rate_alarm_active = True
                     self.alarm_on("MAX RATE ALARM")
-                if(self.low_limit_box.value > avg):
+                if(self.low_limit_box.value() > avg):
                     self.rate_alarm_active = True
                     self.alarm_on("MIN RATE ALARM")     # placeholder
             else:
-                if(avg <= self.high_limit_box.value and self.low_limit_box.value <= avg):
+                if(avg <= self.high_limit_box.value() and self.low_limit_box.value() <= avg):
                     self.rate_alarm_active = False 
                     self.alarm_off()
 
