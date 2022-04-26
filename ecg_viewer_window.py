@@ -103,9 +103,6 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(self.gridFrame_2)
         self.label_4.setObjectName("label_4")
         self.gridLayout_3.addWidget(self.label_4, 1, 0, 1, 1)
-        self.alarm_mute = QtWidgets.QCheckBox(self.gridFrame_2)
-        self.alarm_mute.setObjectName("alarm_mute")
-        self.gridLayout_3.addWidget(self.alarm_mute, 0, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.gridFrame_2)
         self.label_5.setObjectName("label_5")
         self.gridLayout_3.addWidget(self.label_5, 2, 0, 1, 1)
@@ -151,7 +148,6 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Device:"))
         self.label_3.setText(_translate("MainWindow", "Alarm Control:"))
         self.label_4.setText(_translate("MainWindow", "High Limit:"))
-        self.alarm_mute.setText(_translate("MainWindow", "Mute"))
         self.label_5.setText(_translate("MainWindow", "Low Limit:"))
         self.alarm_text.setText(_translate("MainWindow", "RATE ALARM"))
 from pyqtgraph import PlotWidget

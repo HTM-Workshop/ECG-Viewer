@@ -5,7 +5,6 @@ import pyqtgraph as pg
 import statistics as stat
 import sys, os, math, serial, time, numpy
 import serial.tools.list_ports
-from playsound import playsound
 from scipy import signal
 from ecg_viewer_window import Ui_MainWindow
 
