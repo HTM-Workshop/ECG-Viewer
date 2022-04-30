@@ -140,7 +140,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         while(self.ser.inWaiting() > 0):
             buf = buf + str(self.ser.read().decode())
         try:
-            buf = buf.strip('\n').strip('\r')
+            buf = buf.strip('\n')
+            buf = buf.replace('\r', '')
+            buf = buf.split('\n')[0]
             self.current_reading = float(buf)
             assert(self.invert_modifier == 1 or self.invert_modifier == -1)
             #if(self.current_reading < 20):
@@ -152,15 +154,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.value_history_timed.pop(0)
             self.value_history.pop(0)
         except Exception as e:
-            print(e)
+            pass
+            #print(e)
             
         # Perform calibration. Capture data as normal until self.calibrating counter is zero.
         # If the peak value is below the mean, invert the signal.
         if(self.calibrating > 0):
             self.calibrating = self.calibrating - 1
         elif(self.calibrating == 0):
-            min_delta = self.mean - min(self.value_history[50:100])
-            max_delta = max(self.value_history[50:100]) - self.mean
+            period_mean = stat.mean(self.value_history[50:100])
+            min_delta = period_mean - min(self.value_history[50:100])
+            max_delta = max(self.value_history[50:100]) - period_mean
+            print("DYNAMIC CALIBRATION INFO:")
+            print("MAX      : " + str(max(self.value_history[50:100])))
+            print("MIN      : " + str(min(self.value_history[50:100])))
+            print("MEAN     : " + str(period_mean))
+            print("MAX DELTA: " + str(max_delta))
+            print("MIN DELTA: " + str(min_delta))
             if(min_delta > max_delta):
                 self.invert_modifier = -1
                 self.statusBar.showMessage('Inverting input signal')   
