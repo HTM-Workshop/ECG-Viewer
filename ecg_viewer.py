@@ -199,13 +199,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             mean = pg.InfiniteLine(pos = self.mean, angle = 0, movable = False, pen = red_pen)
             self.graph.addItem(mean)
 
+            # select datapoints to graph depending on if the capture is activelly running or not
+            if(self.run == True):
+                sel_peaks = self.peaks[::-1][0:2]
+                sel_hold  = self.peaks[::-1][1:2]
+            else:
+                sel_peaks = self.peaks[::-1]
+                sel_hold  = self.peaks[::-1]
+
             # display a vertical line intersecting each detected peak
-            for p in self.peaks[::-1][0:2]:
+            for p in sel_peaks:
                 l = pg.InfiniteLine(pos = p, angle = 90, movable = False)
                 self.graph.addItem(l)  
             
             # display holdoff  
-            for p in self.peaks[::-1][1:2]:
+            for p in sel_hold:
                 l = pg.InfiniteLine(pos = p + 15, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
                 self.graph.addItem(l) 
     
