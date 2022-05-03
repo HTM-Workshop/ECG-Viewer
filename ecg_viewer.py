@@ -7,6 +7,7 @@ import sys, os, math, serial, time, numpy
 import serial.tools.list_ports
 from scipy import signal
 from ecg_viewer_window import Ui_MainWindow
+from scipy.signal import savgol_filter
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -19,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 20
+        self.capture_rate_ms = 15
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         
@@ -189,7 +190,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph.clear()
         self.mean = stat.mean(self.value_history)
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
-        self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
+
+        if(self.show_track.isChecked() == False):
+            # run savgol filter before plotting 
+            fdat = savgol_filter(
+                self.value_history, 
+                window_length = 7, 
+                polyorder = 5,
+                mode = 'interp',
+                )[25:175]
+            self.graph.plot([*range(len(fdat))], fdat, pen = green_pen)
+        else:
+            self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
         
         # Visually shows signal tracking information. SLOW
         if(self.show_track.isChecked()):
