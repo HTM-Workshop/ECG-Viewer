@@ -23,6 +23,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.capture_rate_ms = 10
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
+        self.capture_index = 0
         
         # graph timer
         self.graph_timer = QtCore.QTimer()
@@ -31,8 +32,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
         # heart rate timer
-        self.hr_timer = QtCore.QTimer()
-        self.hr_timer.timeout.connect(self.update_hr)
+#        self.hr_timer = QtCore.QTimer()
+#        self.hr_timer.timeout.connect(self.update_hr)
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
@@ -53,7 +54,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # data variables
         self.current_reading = 0
-        self.value_history_max = 200
+        self.value_history_max = 300
         self.value_history = [0] * self.value_history_max
         self.mean = 0 
         self.invert_modifier = 1
@@ -101,7 +102,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 time.sleep(3)
                 self.ser.flushInput()
                 self.capture_timer.start(self.capture_rate_ms)
-                self.hr_timer.start(1000)
+#                self.hr_timer.start(1000)
                 self.graph_timer.start(self.graph_timer_ms)
                 self.calibrating = self.value_history_max
                 self.invert_modifier = 1
@@ -117,7 +118,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.button_run.setDisabled(True)
             self.capture_timer.stop()
-            self.hr_timer.stop()
+#            self.hr_timer.stop()
             self.graph_timer.stop()
             self.ser.close()
             self.ser = None
@@ -151,10 +152,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             #    self.ser.flush()
             #    return
             val = self.invert_modifier * self.current_reading
-            self.value_history.append(val)
-            self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
-            self.value_history_timed.pop(0)
-            self.value_history.pop(0)
+            self.value_history[self.capture_index] = val
+            self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
+            self.capture_index = (self.capture_index + 1) % self.value_history_max 
+
+            if(self.capture_index == 0):
+                self.update_hr()
+            #self.value_history.append(val)
+            #self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
+            #self.value_history_timed.pop(0)
+            #self.value_history.pop(0)
         except Exception as e:
             pass
             #print(e)
@@ -201,7 +208,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     window_length = self.window_length_box.value(), 
                     polyorder = self.polyorder_box.value(),
                     mode = 'interp',
-                    )[25:175]
+                    )[25:self.value_history_max - 25]
                 self.graph.plot([*range(len(fdat))], fdat, pen = green_pen)
             else:
                 self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
