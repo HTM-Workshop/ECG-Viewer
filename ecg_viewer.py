@@ -20,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 15
+        self.capture_rate_ms = 10
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         
@@ -106,6 +106,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.calibrating = self.value_history_max
                 self.invert_modifier = 1
                 self.button_run.setDisabled(False)
+                self.set_message("CALIBRATING")
         # re-add the try and uncomment below later
             except Exception as e:
                 error_message = QtWidgets.QMessageBox()
@@ -163,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if(self.calibrating > 0):
             self.calibrating = self.calibrating - 1
         elif(self.calibrating == 0):
+            self.clear_message()
             period_mean = stat.mean(self.value_history[50:100])
             min_delta = period_mean - min(self.value_history[50:100])
             max_delta = max(self.value_history[50:100]) - period_mean
@@ -191,18 +193,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.mean = stat.mean(self.value_history)
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
 
-        if(self.show_track.isChecked() == False):
-            # run savgol filter before plotting 
-            fdat = savgol_filter(
-                self.value_history, 
-                window_length = 7, 
-                polyorder = 5,
-                mode = 'interp',
-                )[25:175]
-            self.graph.plot([*range(len(fdat))], fdat, pen = green_pen)
-        else:
-            self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
-        
+        try:
+            if(self.show_track.isChecked() == False):
+                # run savgol filter before plotting 
+                fdat = savgol_filter(
+                    self.value_history, 
+                    window_length = self.window_length_box.value(), 
+                    polyorder = self.polyorder_box.value(),
+                    mode = 'interp',
+                    )[25:175]
+                self.graph.plot([*range(len(fdat))], fdat, pen = green_pen)
+            else:
+                self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
+        except:
+            self.window_length_box.setValue(7)
+            self.polyorder_box.setValue(5)
+
         # Visually shows signal tracking information. SLOW
         if(self.show_track.isChecked()):
             center = self.detect_peaks()
@@ -233,6 +239,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # Converts the average time between peaks to frequency 
     # (1 / (<avg peak distance> * <capture rate in ms>)) * 60 * 1000
     def update_hr(self):
+        if(self.calibrating > 0):
+            return
         self.detect_peaks()
         times = list()
         if(len(self.peaks) > 1):
@@ -274,10 +282,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def alarm_off(self):
         self.alarm_window.setStyleSheet("QFrame { background-color: white }")
         self.alarm_text.setText("")
+        
+    def set_message(self, text):
+        self.alarm_window.setStyleSheet("QFrame { background-color: white }")
+        self.alarm_text.setText(text)
+        
+    def clear_message(self):
+        self.alarm_window.setStyleSheet("QFrame { background-color: white }")
+        self.alarm_text.setText("")
 
     # clear all history, including calibration
     def reset_graph(self):
         self.alarm_off()
+        self.set_message("CALIBRATING")
         self.rate_alarm_active = False 
         self.value_history = [0] * self.value_history_max
         self.calibrating = self.value_history_max
