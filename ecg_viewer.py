@@ -20,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 10
+        self.capture_rate_ms = 5
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         self.capture_index = 0
@@ -28,7 +28,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_frame_rate = 30                                 # change to adjust refresh rate
+        self.graph_frame_rate = 5                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
         # heart rate timer
@@ -40,6 +40,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_connect.clicked.connect(self.com_connect)  
         self.button_reset.clicked.connect(self.reset_graph)
         self.button_run.clicked.connect(self.run_toggle)
+        self.button_export.clicked.connect(self.export_data)
         self.button_run.setDisabled(True)
         
         # connection status
@@ -54,7 +55,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # data variables
         self.current_reading = 0
-        self.value_history_max = 300
+        self.value_history_max = 600
         self.value_history = [0] * self.value_history_max
         self.mean = 0 
         self.invert_modifier = 1
@@ -157,6 +158,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.capture_index = (self.capture_index + 1) % self.value_history_max 
 
             if(self.capture_index == 0):
+                sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
+                self.statusBar.showMessage("Samples per second: " + str(math.floor((self.value_history_max / sps) * 1000)))
                 self.update_hr()
             #self.value_history.append(val)
             #self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
@@ -239,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             
             # display holdoff  
             for p in sel_hold:
-                l = pg.InfiniteLine(pos = p + 15, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
+                l = pg.InfiniteLine(pos = p + 60, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
                 self.graph.addItem(l) 
     
     # Update the heart rate LCD reading. 
@@ -281,7 +284,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.lcdNumber.display(0)
 
-
     def alarm_on(self, text):
         self.alarm_window.setStyleSheet("QFrame { background-color: red }")
         self.alarm_text.setText(text)
@@ -316,7 +318,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #   height    : minimum height of peak to be accepted
     # modifies:  stores index of peaks in self.peaks 
     # returns :  center (not average) of recorded values
-    def detect_peaks(self, sig_prominence = 20, sig_distance = 13):
+    def detect_peaks(self, sig_prominence = 20, sig_distance = 60):
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
         self.peaks = signal.find_peaks(
                     self.value_history, 
@@ -339,6 +341,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.statusBar.showMessage('Capture running') 
                 self.button_run.setText("Stop")
                 self.capture_timer.start(self.capture_rate_ms)
+
+    # exports data stored in self.value_history to a binary file 
+    def export_data(self):
+        filename = str(time.time()).split('.')[0] + '.bin'
+        f = open(filename, 'wb')
+        data = [int(abs(x)).to_bytes(2, 'little') for x in self.value_history]
+        data = b''.join(data) 
+        f.write(data)
+        f.flush()
+        f.close()
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
