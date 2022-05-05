@@ -242,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             
             # display holdoff  
             for p in sel_hold:
-                l = pg.InfiniteLine(pos = p + 60, angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
+                l = pg.InfiniteLine(pos = p + self.holdoff_box.value(), angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
                 self.graph.addItem(l) 
     
     # Update the heart rate LCD reading. 
@@ -303,7 +303,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # clear all history, including calibration
     def reset_graph(self):
         self.alarm_off()
-        self.set_message("CALIBRATING")
         self.rate_alarm_active = False 
         self.value_history = [0] * self.value_history_max
         self.calibrating = self.value_history_max
@@ -320,11 +319,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # returns :  center (not average) of recorded values
     def detect_peaks(self, sig_prominence = 20, sig_distance = 60):
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
+#       self.peaks = signal.find_peaks(
+#                   self.value_history, 
+#                   prominence = sig_prominence,
+#                   height = center,
+#                   distance = sig_distance,
+#               )[0]
         self.peaks = signal.find_peaks(
                     self.value_history, 
-                    prominence = sig_prominence,
+                    prominence = self.prominence_box.value(),
                     height = center,
-                    distance = sig_distance,
+                    distance = self.holdoff_box.value(),
                 )[0]
         return center
     

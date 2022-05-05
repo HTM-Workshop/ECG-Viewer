@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>icons8-heart-monitor-100.png</normaloff>icons8-heart-monitor-100.png</iconset>
+    <normaloff>../../../../.designer/backup/icons8-heart-monitor-100.png</normaloff>../../../../.designer/backup/icons8-heart-monitor-100.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="PlotWidget" name="graph" native="true">
@@ -307,7 +307,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="capture_rate_box"/>
+        <widget class="QSpinBox" name="capture_rate_box">
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_8">
@@ -317,7 +321,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="holdoff_box"/>
+        <widget class="QSpinBox" name="holdoff_box">
+         <property name="value">
+          <number>60</number>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_9">
@@ -327,17 +335,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="prominence_box"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_12">
-         <property name="text">
-          <string>PD - Min Height</string>
+        <widget class="QSpinBox" name="prominence_box">
+         <property name="value">
+          <number>20</number>
          </property>
         </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="height_box"/>
        </item>
        <item>
         <spacer name="verticalSpacer">
