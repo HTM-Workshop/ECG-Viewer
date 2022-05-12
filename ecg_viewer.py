@@ -13,6 +13,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
+        
+        self.graph.disableAutoRange()
 
         # Load the UI Page
         #uic.loadUi('ecg_viewer_window.pyui', self)            
@@ -20,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 5
+        self.capture_rate_ms = 3
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         self.capture_index = 0
@@ -28,7 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_frame_rate = 5                                 # change to adjust refresh rate
+        self.graph_frame_rate = 30                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
         # heart rate timer
@@ -161,6 +163,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
                 self.statusBar.showMessage("Samples per second: " + str(math.floor((self.value_history_max / sps) * 1000)))
                 self.update_hr()
+                self.graph.setRange(
+                    xRange = (0, self.value_history_max), 
+                    yRange = (min(self.value_history) - 20, max(self.value_history) + 20)
+                )
             #self.value_history.append(val)
             #self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
             #self.value_history_timed.pop(0)
@@ -212,9 +218,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     polyorder = self.polyorder_box.value(),
                     mode = 'interp',
                     )[25:self.value_history_max - 25]
-                self.graph.plot([*range(len(fdat))], fdat, pen = green_pen)
+                self.graph.plot([*range(len(fdat))], fdat, pen = green_pen, skipFiniteCheck = True)
             else:
-                self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen)
+                self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen, skipFiniteCheck = True)
         except:
             self.window_length_box.setValue(7)
             self.polyorder_box.setValue(5)
