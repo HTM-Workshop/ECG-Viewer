@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>734</height>
+    <height>761</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>800</width>
-    <height>734</height>
+    <height>761</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -371,7 +371,7 @@
           <number>2</number>
          </property>
          <property name="value">
-          <number>7</number>
+          <number>27</number>
          </property>
         </widget>
        </item>
@@ -423,6 +423,29 @@
     </property>
     <property name="text">
      <string>Advanced Controls</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>710</y>
+      <width>781</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>13</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>This program is for educational purposes only. NOT FOR MEDICAL USE.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

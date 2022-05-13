@@ -13,9 +13,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 734)
+        MainWindow.resize(800, 761)
         MainWindow.setMinimumSize(QtCore.QSize(800, 734))
-        MainWindow.setMaximumSize(QtCore.QSize(800, 734))
+        MainWindow.setMaximumSize(QtCore.QSize(800, 761))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../../../../.designer/backup/icons8-heart-monitor-100.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -191,6 +191,15 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font)
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
+        self.label_12 = QtWidgets.QLabel(self.centralwidget)
+        self.label_12.setGeometry(QtCore.QRect(10, 710, 781, 20))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_12.setFont(font)
+        self.label_12.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_12.setObjectName("label_12")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
@@ -220,4 +229,5 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "Filtering Window Length"))
         self.label_11.setText(_translate("MainWindow", "Filtering Polyorder"))
         self.label_6.setText(_translate("MainWindow", "Advanced Controls"))
+        self.label_12.setText(_translate("MainWindow", "This program is for educational purposes only. NOT FOR MEDICAL USE."))
 from pyqtgraph import PlotWidget
