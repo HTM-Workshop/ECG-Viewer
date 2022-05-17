@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 3
+        self.capture_rate_ms = 2
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         self.capture_index = 0
@@ -57,7 +57,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # data variables
         self.current_reading = 0
-        self.value_history_max = 600
+        self.value_history_max = 1200
         self.value_history = [0] * self.value_history_max
         self.mean = 0 
         self.invert_modifier = 1
@@ -133,6 +133,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def get_input(self):
         try:
             self.ser.write('\n'.encode())
+            self.ser.flush()
         except Exception as e:
             self.ser == None
             self.com_connect()
@@ -144,7 +145,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.exec_()
         buf = ''
         while(self.ser.inWaiting() > 0):
-            buf = buf + str(self.ser.read().decode())
+            c = str(self.ser.read().decode())
+            buf = buf + c
+            if c == '\n':
+                break
         try:
             buf = buf.strip('\n')
             buf = buf.replace('\r', '')
@@ -184,12 +188,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             period_mean = stat.mean(self.value_history[50:100])
             min_delta = period_mean - min(self.value_history[50:100])
             max_delta = max(self.value_history[50:100]) - period_mean
+            
             print("DYNAMIC CALIBRATION INFO:")
             print("MAX      : " + str(max(self.value_history[50:100])))
             print("MIN      : " + str(min(self.value_history[50:100])))
             print("MEAN     : " + str(period_mean))
             print("MAX DELTA: " + str(max_delta))
             print("MIN DELTA: " + str(min_delta))
+            print("CIDX     : " + str(self.capture_index))
             if(min_delta > max_delta):
                 self.invert_modifier = -1
                 self.statusBar.showMessage('Inverting input signal')   
@@ -308,6 +314,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # clear all history, including calibration
     def reset_graph(self):
+        self.capture_index = 0
         self.alarm_off()
         self.rate_alarm_active = False 
         self.value_history = [0] * self.value_history_max
