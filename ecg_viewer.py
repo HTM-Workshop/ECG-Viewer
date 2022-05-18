@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.get_input)
-        self.capture_rate_ms = 2
+        self.capture_rate_ms = 1
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_timer_qt.start()
         self.capture_index = 0
@@ -30,7 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_frame_rate = 30                                 # change to adjust refresh rate
+        self.graph_frame_rate = 15                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
         # heart rate timer
@@ -57,7 +57,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # data variables
         self.current_reading = 0
-        self.value_history_max = 1200
+        self.value_history_max = 2500
         self.value_history = [0] * self.value_history_max
         self.mean = 0 
         self.invert_modifier = 1
