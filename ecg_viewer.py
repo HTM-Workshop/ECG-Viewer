@@ -13,11 +13,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
-        
-        self.graph.disableAutoRange()
-
-        # Load the UI Page
-        #uic.loadUi('ecg_viewer_window.pyui', self)            
+        self.graph.disableAutoRange()     
                 
         # Capture timer
         self.capture_timer = QtCore.QTimer()
@@ -33,16 +29,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_frame_rate = 15                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
         
-        # heart rate timer
-#        self.hr_timer = QtCore.QTimer()
-#        self.hr_timer.timeout.connect(self.update_hr)
-        
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
         self.button_connect.clicked.connect(self.com_connect)  
         self.button_reset.clicked.connect(self.reset_graph)
         self.button_run.clicked.connect(self.run_toggle)
         self.button_export.clicked.connect(self.export_data)
+        self.button_force_invert.clicked.connect(self.force_invert)
         self.button_run.setDisabled(True)
         
         # connection status
@@ -98,6 +91,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if(self.com_port == ''):
                     self.statusBar.showMessage('No device selected!')
                     return
+                self.reset_graph()
                 self.ser = serial.Serial(self.com_port, 115200)
                 self.button_refresh.setDisabled(True)
                 self.button_connect.setText("Disconnect")
@@ -105,13 +99,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 time.sleep(3)
                 self.ser.flushInput()
                 self.capture_timer.start(self.capture_rate_ms)
-#                self.hr_timer.start(1000)
                 self.graph_timer.start(self.graph_timer_ms)
-                self.calibrating = self.value_history_max
                 self.invert_modifier = 1
                 self.button_run.setDisabled(False)
                 self.set_message("CALIBRATING")
-        # re-add the try and uncomment below later
             except Exception as e:
                 error_message = QtWidgets.QMessageBox()
                 error_message.setWindowTitle("Connection Error")
@@ -121,13 +112,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.button_run.setDisabled(True)
             self.capture_timer.stop()
-#            self.hr_timer.stop()
             self.graph_timer.stop()
             self.ser.close()
             self.ser = None
             self.button_refresh.setDisabled(False)
             self.button_connect.setText("Connect")
             self.statusBar.showMessage('No device connected')   
+
+    # clear all history, including calibration
+    def reset_graph(self):
+        self.capture_index = 0
+        self.alarm_off()
+        self.rate_alarm_active = False 
+        self.value_history = [0] * self.value_history_max
+        self.calibrating = self.value_history_max
+        self.value_history_timed = list()
+        for i in range(self.value_history_max):
+            self.value_history_timed.append([0, -1])
+    
                 
     # Send a value to the Arduino to trigger it to do a measurement
     def get_input(self):
@@ -155,14 +157,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             buf = buf.split('\n')[0]
             self.current_reading = float(buf)
             assert(self.invert_modifier == 1 or self.invert_modifier == -1)
-            #if(self.current_reading < 20):
-            #    self.ser.flush()
-            #    return
             val = self.invert_modifier * self.current_reading
             self.value_history[self.capture_index] = val
             self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
             self.capture_index = (self.capture_index + 1) % self.value_history_max 
-
             if(self.capture_index == 0):
                 sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
                 self.statusBar.showMessage("Samples per second: " + str(math.floor((self.value_history_max / sps) * 1000)))
@@ -171,13 +169,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     xRange = (0, self.value_history_max), 
                     yRange = (min(self.value_history) - 20, max(self.value_history) + 20)
                 )
-            #self.value_history.append(val)
-            #self.value_history_timed.append([val, self.capture_timer_qt.elapsed()])
-            #self.value_history_timed.pop(0)
-            #self.value_history.pop(0)
         except Exception as e:
             pass
-            #print(e)
             
         # Perform calibration. Capture data as normal until self.calibrating counter is zero.
         # If the peak value is below the mean, invert the signal.
@@ -188,7 +181,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             period_mean = stat.mean(self.value_history[50:100])
             min_delta = period_mean - min(self.value_history[50:100])
             max_delta = max(self.value_history[50:100]) - period_mean
-            
             print("DYNAMIC CALIBRATION INFO:")
             print("MAX      : " + str(max(self.value_history[50:100])))
             print("MIN      : " + str(min(self.value_history[50:100])))
@@ -203,9 +195,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.invert_modifier = 1
             self.calibrating = -1
             
-        # update graph
-        #self.draw_graph()
-        
     # Clear and refresh graph 
     def draw_graph(self):
         red_pen = pg.mkPen('r')
@@ -214,7 +203,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph.clear()
         self.mean = stat.mean(self.value_history)
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
-
         try:
             if(self.show_track.isChecked() == False):
                 # run savgol filter before plotting 
@@ -296,34 +284,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.lcdNumber.display(0)
 
+    # message box methods
     def alarm_on(self, text):
         self.alarm_window.setStyleSheet("QFrame { background-color: red }")
         self.alarm_text.setText(text)
-
     def alarm_off(self):
         self.alarm_window.setStyleSheet("QFrame { background-color: white }")
         self.alarm_text.setText("")
-        
     def set_message(self, text):
         self.alarm_window.setStyleSheet("QFrame { background-color: white }")
         self.alarm_text.setText(text)
-        
     def clear_message(self):
         self.alarm_window.setStyleSheet("QFrame { background-color: white }")
         self.alarm_text.setText("")
+        
+    def force_invert(self):
+        self.invert_modifier = self.invert_modifier * -1
 
-    # clear all history, including calibration
-    def reset_graph(self):
-        self.capture_index = 0
-        self.alarm_off()
-        self.rate_alarm_active = False 
-        self.value_history = [0] * self.value_history_max
-        self.calibrating = self.value_history_max
-        self.invert_modifier = 1
-        self.value_history_timed = list()
-        for i in range(self.value_history_max):
-            self.value_history_timed.append([0, -1])
-    
     # detect peaks using scipy. 
     #   prominence: the threshold the peak needs to be at, relative to the surrounding samples
     #   distance  : (AKA holdoff) minimum required distance between the previous peak to the next peak
@@ -332,12 +309,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # returns :  center (not average) of recorded values
     def detect_peaks(self, sig_prominence = 20, sig_distance = 60):
         center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
-#       self.peaks = signal.find_peaks(
-#                   self.value_history, 
-#                   prominence = sig_prominence,
-#                   height = center,
-#                   distance = sig_distance,
-#               )[0]
         self.peaks = signal.find_peaks(
                     self.value_history, 
                     prominence = self.prominence_box.value(),
