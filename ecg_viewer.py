@@ -45,8 +45,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # perform initial com port check
         self.com_refresh()  
         
-        # set graph properties
+        # graph properties
         self.graph.showGrid(True, True, alpha = 0.5)  
+        self.graph_padding_factor = 0.667
         
         # data variables
         self.current_reading = 0
@@ -65,7 +66,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.rate_alarm_min = 40
         self.rate_alarm_history = [80] * 3
         self.rate_alarm_active = False
-        self.rate_alarm_muted  = False
 
         # data over time storage
         self.value_history_timed = list()
@@ -125,7 +125,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.alarm_off()
         self.rate_alarm_active = False 
         self.value_history = [0] * self.value_history_max
-        self.calibrating = self.value_history_max
+        self.calibrating = self.value_history_max + 1
         self.value_history_timed = list()
         for i in range(self.value_history_max):
             self.value_history_timed.append([0, -1])
@@ -161,13 +161,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.value_history[self.capture_index] = val
             self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
             self.capture_index = (self.capture_index + 1) % self.value_history_max 
+
+            # resize graph at end of capture cycle
             if(self.capture_index == 0):
+                self.graph_padding_factor = self.graph_zoom_slider.value() / 100
+                high = max(self.value_history)
+                low  = min(self.value_history)
+                pad  = math.floor(((high) - (low)) * self.graph_padding_factor)
+                print("PAD VALUE: " + str(pad))
                 sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
                 self.statusBar.showMessage("Samples per second: " + str(math.floor((self.value_history_max / sps) * 1000)))
                 self.update_hr()
                 self.graph.setRange(
                     xRange = (0, self.value_history_max), 
-                    yRange = (min(self.value_history) - 20, max(self.value_history) + 20)
+                    yRange = (high + pad , low - pad)
                 )
         except Exception as e:
             pass
@@ -188,11 +195,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             print("MAX DELTA: " + str(max_delta))
             print("MIN DELTA: " + str(min_delta))
             print("CIDX     : " + str(self.capture_index))
-            if(min_delta > max_delta):
-                self.invert_modifier = -1
-                self.statusBar.showMessage('Inverting input signal')   
-            else:
-                self.invert_modifier = 1
+            if(self.autoinvert_checkbox.isChecked()):
+                if(min_delta > max_delta):
+                    self.invert_modifier = -1
+                    self.statusBar.showMessage('Inverting input signal')   
+                else:
+                    self.invert_modifier = 1
             self.calibrating = -1
             
     # Clear and refresh graph 
