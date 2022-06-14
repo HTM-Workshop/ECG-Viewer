@@ -228,7 +228,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "DIYECG Viewer"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "DIYECG Viewer "))
         self.label.setText(_translate("MainWindow", "Approximate BPM"))
         self.show_track.setText(_translate("MainWindow", "Show signal tracking"))
         self.button_reset.setText(_translate("MainWindow", "Reset"))

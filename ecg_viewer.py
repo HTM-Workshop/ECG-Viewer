@@ -1,4 +1,5 @@
 #!/usr/bin/python
+VERSION = "v1.0"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
@@ -12,7 +13,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
-        self.graph.disableAutoRange()     
+        self.graph.disableAutoRange()    
+        self.setWindowTitle("DIYECG Viewer - " + VERSION)
                 
         # Capture timer
         self.capture_timer = QtCore.QTimer()
