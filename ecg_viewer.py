@@ -21,7 +21,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.capture_timer.timeout.connect(self.do_update)
         self.capture_rate_ms = 1
         self.capture_timer_qt = QtCore.QElapsedTimer()
-        self.capture_timer_qt.start()
         self.capture_index = 0
         
         # graph timer

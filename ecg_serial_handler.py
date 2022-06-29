@@ -80,8 +80,8 @@ def get_input(self):
         self.value_history[self.capture_index] = val
         self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
         self.capture_index = (self.capture_index + 1) % self.value_history_max 
-    except Exception as e:
-        pass
+    except:
+        pass        # measurement info send from Arduino was invalid, ignore it 
         
     # Perform calibration. Capture data as normal until self.calibrating counter is zero.
     # If the peak value is below the mean, invert the signal.
