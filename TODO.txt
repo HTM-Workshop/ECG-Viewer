@@ -1,5 +1,5 @@
 Add zoom-slider interrupt to allow immediate resizing for graph
-Fix alarms so that a new alarm can trigger if a previous alarm is still ongoing
-Drop decimal point from HR calculation. Increase HR number of averages to smooth out reading.
+Fix alarms so that a new alarm can trigger if a previous alarm is still ongoing - DONE
+Drop decimal point from HR calculation. Increase HR number of averages to smooth out reading. - DONE
 Rework GUI to allow for window resizing. 
 Create axes for the graph. Look into adding units for graph itself. 

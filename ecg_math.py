@@ -38,25 +38,30 @@ def update_hr(self):
     if(len(times)):
         f = (1 / (sum(times) / len(times)))
         rate = f * 1000 * 60
-        self.lcdNumber.display(rate)
+        #self.lcdNumber.display(rate)
 
         # update heart rate history
         self.rate_alarm_history.append(rate)
         self.rate_alarm_history.pop(0)
         
+        # display rate as average of rate history
+        self.lcdNumber.display(math.floor(stat.mean(self.rate_alarm_history)))
+        
         # check if rate alarm has been tripped or reset, this should probably be moved 
         avg = math.floor(stat.mean(self.rate_alarm_history))
-        if(self.rate_alarm_active == False):
-            if(avg > self.high_limit_box.value()):
-                self.rate_alarm_active = True
-                self.alarm_on("MAX RATE ALARM")
-            if(self.low_limit_box.value() > avg):
-                self.rate_alarm_active = True
-                self.alarm_on("MIN RATE ALARM")     # placeholder
-        else:
+
+        self.clear_message()
+        if(avg > self.high_limit_box.value()):
+            self.rate_alarm_active = True
+            self.alarm_on("MAX RATE ALARM")
+        if(self.low_limit_box.value() > avg):
+            self.rate_alarm_active = True
+            self.alarm_on("MIN RATE ALARM")     # placeholder
+        if(self.rate_alarm_active == True):
             if(avg <= self.high_limit_box.value() and self.low_limit_box.value() <= avg):
                 self.rate_alarm_active = False 
                 self.alarm_off()
     else:
         self.lcdNumber.display(0)
+        self.set_message("SIGNAL LOSS")
 

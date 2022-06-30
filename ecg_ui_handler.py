@@ -3,12 +3,14 @@ import time
 
 # message box methods
 def alarm_on(self, text):
+    self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: red }")
     self.alarm_text.setText(text)
 def alarm_off(self):
-    self.alarm_window.setStyleSheet("QFrame { background-color: white }")
     self.alarm_text.setText("")
+    self.alarm_window.setStyleSheet("QFrame { background-color: white }")
 def set_message(self, text):
+    self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
     self.alarm_text.setText(text)
 def clear_message(self):
