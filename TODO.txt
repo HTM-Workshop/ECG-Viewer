@@ -3,3 +3,4 @@ Fix alarms so that a new alarm can trigger if a previous alarm is still ongoing 
 Drop decimal point from HR calculation. Increase HR number of averages to smooth out reading. - DONE
 Rework GUI to allow for window resizing. 
 Create axes for the graph. Look into adding units for graph itself. 
+Add tooltips to controls
