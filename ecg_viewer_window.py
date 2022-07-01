@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.show_track = QtWidgets.QCheckBox(self.gridFrame)
         self.show_track.setToolTip("")
-        self.show_track.setToolTipDuration(60)
+        self.show_track.setToolTipDuration(-1)
         self.show_track.setWhatsThis("")
         self.show_track.setObjectName("show_track")
         self.horizontalLayout.addWidget(self.show_track)

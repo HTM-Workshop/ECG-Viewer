@@ -274,10 +274,10 @@
          <item>
           <widget class="QCheckBox" name="show_track">
            <property name="toolTip">
-            <string/>
+            <string notr="true"/>
            </property>
            <property name="toolTipDuration">
-            <number>60</number>
+            <number>-1</number>
            </property>
            <property name="whatsThis">
             <string/>
