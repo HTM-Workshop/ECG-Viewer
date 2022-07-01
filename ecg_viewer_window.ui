@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>837</width>
+    <width>856</width>
     <height>683</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>837</width>
+    <width>856</width>
     <height>683</height>
    </size>
   </property>
@@ -160,7 +160,7 @@
          <item>
           <widget class="QSpinBox" name="holdoff_box">
            <property name="toolTip">
-            <string comment="test" extracomment="Peak Detection Holdoff - How long to wait before looking for the next peak."/>
+            <string/>
            </property>
            <property name="toolTipDuration">
             <number>-1</number>

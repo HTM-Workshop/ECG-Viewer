@@ -36,7 +36,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_run.clicked.connect(self.run_toggle)
         self.button_export.clicked.connect(self.export_data)
         self.button_force_invert.clicked.connect(self.force_invert)
+        self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
         self.button_run.setDisabled(True)
+        
+        # set tooltips
+        self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
+        self.prominence_box.setToolTip("The expected magnitude of the peaks. Lower to increase sensitivity.")
+        self.button_force_invert.setToolTip("Inverts the waveform. Useful if calibration didn't automatically invert the signal.")
+        self.show_track.setToolTip("Show the real-time peak detection. Disables filtering while on")
+        self.button_reset.setToolTip("Clears graph data. Forces recalibration.")
+        self.button_run.setToolTip("Pauses data capture.")
+        self.button_export.setToolTip("Export the displayed waveform as a raw binary file.")
+        self.button_refresh.setToolTip("Refresh the list of connected devices.")
+        self.button_connect.setToolTip("Connected to the selected device.")
+        self.graph_zoom_slider.setToolTip("Changes the vertical zoom of the graph.")
+        self.window_length_box.setToolTip("Higher values give more consistent filtering, but increases bias error. VALUE MUST BE ODD.")
+        self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
         
         # connection status
         self.ser = None

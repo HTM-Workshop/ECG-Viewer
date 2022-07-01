@@ -13,8 +13,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(837, 683)
-        MainWindow.setMinimumSize(QtCore.QSize(837, 683))
+        MainWindow.resize(856, 683)
+        MainWindow.setMinimumSize(QtCore.QSize(856, 683))
         MainWindow.setMaximumSize(QtCore.QSize(9999, 9999))
         MainWindow.setBaseSize(QtCore.QSize(800, 750))
         icon = QtGui.QIcon()
@@ -79,7 +79,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.label_8)
         self.holdoff_box = QtWidgets.QSpinBox(self.gridFrame_2)
         self.holdoff_box.setToolTip("")
-        self.holdoff_box.setToolTipDuration(1)
+        self.holdoff_box.setToolTipDuration(-1)
         self.holdoff_box.setMaximum(300)
         self.holdoff_box.setSingleStep(10)
         self.holdoff_box.setProperty("value", 150)

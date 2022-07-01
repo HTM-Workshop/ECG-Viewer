@@ -27,7 +27,7 @@ def draw_graph(self):
         else:                                           # otherwise plot raw, unfiltered values
             self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen, skipFiniteCheck = True)
     except Exception as e:
-        self.window_length_box.setValue(7)
+        self.window_length_box.setValue(99)
         self.polyorder_box.setValue(5)
         print(e)
 
