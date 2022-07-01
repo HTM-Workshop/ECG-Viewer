@@ -1,5 +1,5 @@
 #!/usr/bin/python
-VERSION = "v1.0"
+VERSION = "v1.1 - DEV BUILD"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
@@ -97,11 +97,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         for i in range(self.value_history_max):
             self.value_history_timed.append([0, -1])
 
+def check_resolution(app):
+    screen = app.primaryScreen().size()
+    size_string = str(screen.width()) + " x " + str(screen.height())
+    print("Detected resolution: " + size_string)
+    if(screen.width() < 1024 or screen.height() < 768):
+        error_message = QtWidgets.QMessageBox()
+        error_message.setWindowTitle("Notice")
+        error_message.setText("The reccomended minimum display resolution is 1024x768.\n\nYour resolution: " + size_string)
+        error_message.exec_()   
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
     main.show()
+    check_resolution(app)   
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

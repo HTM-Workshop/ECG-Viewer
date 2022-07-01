@@ -78,6 +78,8 @@ class Ui_MainWindow(object):
         self.label_8.setObjectName("label_8")
         self.verticalLayout.addWidget(self.label_8)
         self.holdoff_box = QtWidgets.QSpinBox(self.gridFrame_2)
+        self.holdoff_box.setToolTip("")
+        self.holdoff_box.setToolTipDuration(1)
         self.holdoff_box.setMaximum(300)
         self.holdoff_box.setSingleStep(10)
         self.holdoff_box.setProperty("value", 150)
