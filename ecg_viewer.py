@@ -7,7 +7,12 @@ import statistics as stat
 import sys, os, math, serial, time
 from ecg_viewer_window import Ui_MainWindow
 
-
+# manual includes to fix occasional compile problem
+from ecg_viewer_window import Ui_MainWindow 
+from pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt5 import *  
+from pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5 import *  
+from pyqtgraph.imageview.ImageViewTemplate_pyqt5 import *  
+from pyqtgraph.console.template_pyqt5 import * 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
