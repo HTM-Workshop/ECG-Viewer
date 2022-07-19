@@ -117,8 +117,6 @@ def get_input(self):
                     self.invert_modifier = self.invert_modifier * -1
                     self.statusBar.showMessage('Inverting input signal')  
                     print("*** INVERTING SIGNAL ***") 
-                else:
-                    self.invert_modifier = 1
         else:
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
