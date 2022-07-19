@@ -5,6 +5,7 @@ clean:
 	rm -rf build
 	rm -rf __pycache__
 	rm -rf profile
+	rm -f *.spec
 rebuild:
 	make clean
 	make
