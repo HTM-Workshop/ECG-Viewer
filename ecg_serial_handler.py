@@ -89,22 +89,38 @@ def get_input(self):
         self.calibrating = self.calibrating - 1
     elif(self.calibrating == 0):
         self.clear_message()
-        period_mean = stat.mean(self.value_history[50:100])
-        min_delta = period_mean - min(self.value_history[50:100])
-        max_delta = max(self.value_history[50:100]) - period_mean
+        window = 150
+        peak_samples = 3
+        temp_array = self.value_history[window:self.value_history_max - window].copy()
+        temp_array.sort()
+        period_mean = stat.mean(self.value_history[window:self.value_history_max - window])
+        min_delta = period_mean - stat.mean(temp_array[0:peak_samples])
+        print(temp_array[0:peak_samples])
+        temp_array = temp_array[::-1]
+        max_delta = stat.mean(temp_array[0:peak_samples]) - period_mean
+        print(temp_array[0:peak_samples])
+        
+        #min_delta = period_mean - min(self.value_history[50:self.value_history_max - 50])
+        #max_delta = max(self.value_history[50:self.value_history_max - 50]) - period_mean
         print("DYNAMIC CALIBRATION INFO:")
-        print("MAX      : " + str(max(self.value_history[50:100])))
-        print("MIN      : " + str(min(self.value_history[50:100])))
-        print("MEAN     : " + str(period_mean))
-        print("MAX DELTA: " + str(max_delta))
-        print("MIN DELTA: " + str(min_delta))
-        print("CIDX     : " + str(self.capture_index))
-        if(self.autoinvert_checkbox.isChecked()):
-            if(min_delta > max_delta):
-                self.invert_modifier = -1
-                self.statusBar.showMessage('Inverting input signal')   
-            else:
-                self.invert_modifier = 1
+        print("RANGE     : " + str(window) + " - " + str(self.value_history_max - window))
+        print("PK SAMPLES: " + str(peak_samples))
+        print("AVG MAX   : " + str(max(self.value_history[window:self.value_history_max - window])))
+        print("AVG MIN   : " + str(min(self.value_history[window:self.value_history_max - window])))
+        print("MEAN      : " + str(period_mean))
+        print("MAX DELTA : " + str(max_delta))
+        print("MIN DELTA : " + str(min_delta))
+        print("CIDX      : " + str(self.capture_index))
+        if(abs(max_delta - min_delta) > 1.5):
+            if(self.autoinvert_checkbox.isChecked()):
+                if(min_delta > max_delta):
+                    self.invert_modifier = self.invert_modifier * -1
+                    self.statusBar.showMessage('Inverting input signal')  
+                    print("*** INVERTING SIGNAL ***") 
+                else:
+                    self.invert_modifier = 1
+        else:
+            print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
         if(max_delta == 0 and min_delta == 0):
             error_message = QtWidgets.QMessageBox()
