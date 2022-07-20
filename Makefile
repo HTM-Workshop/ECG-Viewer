@@ -15,7 +15,7 @@ build-ui:
 	pyuic5 ecg_viewer_window.ui > ecg_viewer_window.py
 ve-build:
 	virtualenv ecg_viewer_build
-	source ecg_viewer_build/bin/activate
+	. ecg_viewer_build/bin/activate
 	make install-reqs
 	make rebuild
 	deactivate
