@@ -1,5 +1,6 @@
-numpy==1.17.4
-PyQt5==5.15.6
-pyqtgraph==0.11.0rc0
-pyserial==3.5
-scipy==1.3.3
+numpy
+PyQt5
+pyqtgraph
+pyserial
+scipy
+pyqt5-tools
