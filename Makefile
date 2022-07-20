@@ -1,12 +1,15 @@
+.ONESHELL:
 all:
 	pyinstaller --clean --onefile ecg_viewer.py*
 clean:
-	rm -rf dist
 	rm -rf build
 	rm -rf __pycache__
 	rm -rf profile
 	rm -f *.bin
 	rm -f *.spec
+clean-all:
+	make clean
+	rm -rf dist
 rebuild:
 	make clean
 	make build-ui
@@ -19,6 +22,8 @@ ve-build:
 	make install-reqs
 	make rebuild
 	deactivate
+ve-delete:
+	rm -rf ecg_viewer_build
 install-reqs:
 	pip3 install -r requirements.txt
 	pip3 install pyinstaller

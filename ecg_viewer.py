@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 import statistics as stat
-import sys, os, math, serial, time
+import sys, os, math, serial, time, platform
 from ecg_viewer_window import Ui_MainWindow
 
 # manual includes to fix occasional compile problem
@@ -128,7 +128,15 @@ def check_resolution(app):
         error_message.setText("The reccomended minimum display resolution is 1024x768.\n\nYour resolution: " + size_string)
         error_message.exec_()   
 
+def print_sys_info():
+    print(VERSION)
+    print(time.ctime())
+    print(platform.platform())
+    print("Python Version: " + platform.python_version())
+    print('-' * 80)
+
 def main():
+    print_sys_info()
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
     main.show()

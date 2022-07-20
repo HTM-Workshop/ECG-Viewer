@@ -1,4 +1,5 @@
 @echo off
+pip install virtualenv
 type ecg_viewer.py > ecg_viewer.pyw
 virtualenv ecg_viewer_build
 ecg_viewer_build\Scripts\pip.exe install -r requirements.txt

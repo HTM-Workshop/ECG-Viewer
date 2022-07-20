@@ -3,3 +3,6 @@ __pycache__/
 *.bin
 *.spec
 profile/
+ecg_viewer_build/
+build/
+dist/

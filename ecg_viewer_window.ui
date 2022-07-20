@@ -16,12 +16,6 @@
     <height>625</height>
    </size>
   </property>
-  <property name="maximumSize">
-   <size>
-    <width>9999</width>
-    <height>9999</height>
-   </size>
-  </property>
   <property name="baseSize">
    <size>
     <width>800</width>
