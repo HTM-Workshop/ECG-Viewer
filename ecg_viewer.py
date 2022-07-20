@@ -57,6 +57,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_zoom_slider.setToolTip("Changes the vertical zoom of the graph.")
         self.window_length_box.setToolTip("Higher values give more consistent filtering, but increases bias error. VALUE MUST BE ODD.")
         self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
+        self.bold_checkBox.setToolTip("Draws graph with thicker line. Reduces visual accuracy.")
         
         # connection status
         self.ser = None

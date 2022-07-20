@@ -9,8 +9,11 @@ import math
 # Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so 
 # the graph must be cleared before it's redrawn.
 def draw_graph(self):
-    red_pen = pg.mkPen('r')
-    green_pen = pg.mkPen('g')
+    red_pen = pg.mkPen('r', width = 2)
+    if self.bold_checkBox.isChecked():
+        green_pen = pg.mkPen('g', width = 2)
+    else:
+        green_pen = pg.mkPen('g')
     yellow_pen = pg.mkPen('y')
     self.graph.clear()                                  # does the actual graph clearing
     self.mean = stat.mean(self.value_history)

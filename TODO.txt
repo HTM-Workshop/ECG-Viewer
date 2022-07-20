@@ -1,6 +1,6 @@
-Add zoom-slider interrupt to allow immediate resizing for graph
+Add zoom-slider interrupt to allow immediate resizing for graph - DONE
 Fix alarms so that a new alarm can trigger if a previous alarm is still ongoing - DONE
 Drop decimal point from HR calculation. Increase HR number of averages to smooth out reading. - DONE
-Rework GUI to allow for window resizing. 
+Rework GUI to allow for window resizing. - DONE
 Create axes for the graph. Look into adding units for graph itself. 
-Add tooltips to controls
+Add tooltips to controls - DONE

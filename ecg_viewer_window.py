@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ecg_viewer_window_mac.ui'
+# Form implementation generated from reading ui file 'ecg_viewer_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.1
 #
@@ -236,6 +236,10 @@ class Ui_MainWindow(object):
         self.graph_zoom_slider.setTickPosition(QtWidgets.QSlider.NoTicks)
         self.graph_zoom_slider.setObjectName("graph_zoom_slider")
         self.verticalLayout.addWidget(self.graph_zoom_slider)
+        self.bold_checkBox = QtWidgets.QCheckBox(self.gridFrame_21)
+        self.bold_checkBox.setChecked(True)
+        self.bold_checkBox.setObjectName("bold_checkBox")
+        self.verticalLayout.addWidget(self.bold_checkBox)
         self.gridLayout_4.addLayout(self.verticalLayout, 0, 0, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_4.addItem(spacerItem2, 3, 0, 1, 1)
@@ -284,5 +288,6 @@ class Ui_MainWindow(object):
         self.autoinvert_checkbox.setText(_translate("MainWindow", "Auto Invert"))
         self.button_force_invert.setText(_translate("MainWindow", "Force Invert"))
         self.label_7.setText(_translate("MainWindow", "Vertical Zoom"))
+        self.bold_checkBox.setText(_translate("MainWindow", "Bold Line"))
         self.label_12.setText(_translate("MainWindow", "This program is for educational purposes only. NOT FOR MEDICAL USE."))
 from pyqtgraph import PlotWidget
