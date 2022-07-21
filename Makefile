@@ -1,6 +1,7 @@
 .ONESHELL:
 all:
-	pyrcc5 -o images_qr.py images.qrc
+	make install-reqs
+	make build-ui
 	pyinstaller --windowed --clean --onedir --icon=icon/icon.png ecg_viewer.py*
 clean:
 	rm -rf build
@@ -10,7 +11,6 @@ clean:
 	rm -f *.spec
 clean-all:
 	rm -f *.spec
-	rm -f images_qr.py
 	make clean
 	rm -rf dist
 rebuild:
@@ -18,6 +18,7 @@ rebuild:
 	make build-ui
 	make
 build-ui:
+	pyrcc5 -o images_qr.py images.qrc
 	pyuic5 ecg_viewer_window.ui > ecg_viewer_window.py
 ve-build:
 	pip3 install virtualenv
