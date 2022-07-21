@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 VERSION = "v1.1.0-b.4 - DEV BUILD"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
