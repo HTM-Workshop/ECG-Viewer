@@ -6,6 +6,7 @@ import pyqtgraph as pg
 import statistics as stat
 import sys, os, math, serial, time, platform
 from ecg_viewer_window import Ui_MainWindow
+import images_qr
 
 # manual includes to fix occasional compile problem
 from ecg_viewer_window import Ui_MainWindow 
@@ -20,7 +21,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.graph.disableAutoRange()    
         self.setWindowTitle("DIYECG Viewer - " + VERSION)
-                
+        self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
+        
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.do_update)

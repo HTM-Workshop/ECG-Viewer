@@ -3,4 +3,3 @@ PyQt5
 pyqtgraph
 pyserial
 scipy
-pyqt5-tools

@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../../../.designer/backup/icons8-heart-monitor-100.png</normaloff>../../../../../.designer/backup/icons8-heart-monitor-100.png</iconset>
+    <normaloff>icon/icon.png</normaloff>icon/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_5">
