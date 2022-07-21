@@ -7,3 +7,4 @@ ecg_viewer_build/
 build/
 dist/
 dev_profile/
+old_builds/
