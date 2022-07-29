@@ -75,7 +75,7 @@ def get_input(self):
         buf = buf.replace('\r', '')
         buf = buf.split('\n')[0]
         self.current_reading = float(buf)
-        assert(self.invert_modifier == 1 or self.invert_modifier == -1)
+        #assert(self.invert_modifier == 1 or self.invert_modifier == -1)
         val = self.invert_modifier * self.current_reading
         self.value_history[self.capture_index] = val
         self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]

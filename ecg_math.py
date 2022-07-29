@@ -9,7 +9,9 @@ import statistics as stat
 # modifies:  stores index of peaks in self.peaks 
 # returns :  center (not average) of recorded values
 def detect_peaks(self, sig_prominence = 20, sig_distance = 60):
-    center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
+    vmax = max(self.value_history)
+    vmin = min(self.value_history)
+    center = (vmax - (vmax - vmin) / 2)
     self.peaks = signal.find_peaks(
                 self.value_history, 
                 prominence = self.prominence_box.value(),

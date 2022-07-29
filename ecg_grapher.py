@@ -17,7 +17,7 @@ def draw_graph(self):
     yellow_pen = pg.mkPen('y')
     self.graph.clear()                                  # does the actual graph clearing
     self.mean = stat.mean(self.value_history)
-    center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
+    #center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
     try:
         if(self.show_track.isChecked() == False):       # run savgol filter before plotting 
             fdat = savgol_filter(
