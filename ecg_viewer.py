@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 import statistics as stat
-import sys, os, math, serial, time, platform
+import sys, os, math, serial, time, platform, numpy
 from ecg_viewer_window import Ui_MainWindow
 import images_qr
 
@@ -75,7 +75,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # data variables
         self.current_reading = 0
         self.value_history_max = 2500
-        self.value_history = [0] * self.value_history_max
+        #self.value_history = [0] * self.value_history_max
+        self.value_history = numpy.zeros(self.value_history_max)
+        self.time_history  = numpy.zeros(self.value_history_max)
+        print(type(self.value_history))	
         self.mean = 0 
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
@@ -91,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.rate_alarm_active = False
 
         # data over time storage
-        self.value_history_timed = list()
+        #self.value_history_timed = list()
         
         # perform initial reset
         self.reset()
@@ -118,7 +121,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.calibrating = self.value_history_max + 1
         self.value_history_timed = list()
         for i in range(self.value_history_max):
-            self.value_history_timed.append([0, -1])
+            #self.value_history_timed.append([0, -1])
+            self.value_history = numpy.zeros(self.value_history_max)
+            self.time_history  = numpy.zeros(self.value_history_max)
 
 def check_resolution(app):
     screen = app.primaryScreen().size()

@@ -16,7 +16,8 @@ def draw_graph(self):
         green_pen = pg.mkPen('g')
     yellow_pen = pg.mkPen('y')
     self.graph.clear()                                  # does the actual graph clearing
-    self.mean = stat.mean(self.value_history)
+    #self.mean = stat.mean(self.value_history)
+    self.mean = self.value_history.mean()
     #center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
     try:
         if(self.show_track.isChecked() == False):       # run savgol filter before plotting 
@@ -67,10 +68,11 @@ def draw_graph(self):
 # default, it's only called once a complete sample period has elapsed. 
 def graph_fit(self):
     self.graph_padding_factor = self.graph_zoom_slider.value() / 100
-    high = max(self.value_history)
-    low  = min(self.value_history)
+    high = self.value_history.max()
+    low  = self.value_history.min()
     pad  = math.floor(((high) - (low)) * self.graph_padding_factor)
-    sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
+    #sps = self.value_history_timed[::-1][0][1] - self.value_history_timed[0][1]
+    sps = self.time_history[::-1][0] - self.time_history[0]
     if(sps == 0):
         return
     print("PAD VALUE: " + str(pad))

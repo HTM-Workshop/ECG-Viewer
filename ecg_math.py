@@ -9,8 +9,8 @@ import statistics as stat
 # modifies:  stores index of peaks in self.peaks 
 # returns :  center (not average) of recorded values
 def detect_peaks(self, sig_prominence = 20, sig_distance = 60):
-    vmax = max(self.value_history)
-    vmin = min(self.value_history)
+    vmax = self.value_history.max()
+    vmin = self.value_history.min()
     center = (vmax - (vmax - vmin) / 2)
     self.peaks = signal.find_peaks(
                 self.value_history, 
@@ -35,8 +35,10 @@ def update_hr(self):
     if(len(self.peaks) > 1):
         for i, v in enumerate(self.peaks):
             if(i != 0):
-                last = self.value_history_timed[self.peaks[i - 1]][1]
-                times.append(self.value_history_timed[v][1] - last)
+                #last = self.value_history_timed[self.peaks[i - 1]][1]
+                last = self.time_history[self.peaks[i - 1]]
+                #times.append(self.value_history_timed[v][1] - last)
+                times.append(self.time_history[v] - last)
     if(len(times)):
         f = (1 / (sum(times) / len(times)))
         rate = f * 1000 * 60

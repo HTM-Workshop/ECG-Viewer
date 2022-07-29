@@ -78,7 +78,8 @@ def get_input(self):
         #assert(self.invert_modifier == 1 or self.invert_modifier == -1)
         val = self.invert_modifier * self.current_reading
         self.value_history[self.capture_index] = val
-        self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
+        #self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
+        self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
         self.capture_index = (self.capture_index + 1) % self.value_history_max 
     except:
         pass        # measurement info send from Arduino was invalid, ignore it 
