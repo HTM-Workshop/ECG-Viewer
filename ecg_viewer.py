@@ -78,7 +78,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         #self.value_history = [0] * self.value_history_max
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
-        print(type(self.value_history))	
         self.mean = 0 
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
@@ -92,9 +91,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.rate_alarm_min = 40
         self.rate_alarm_history = [80] * 3
         self.rate_alarm_active = False
-
-        # data over time storage
-        #self.value_history_timed = list()
         
         # perform initial reset
         self.reset()
@@ -117,9 +113,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.capture_index = 0
         self.alarm_off()
         self.rate_alarm_active = False 
-        self.value_history = [0] * self.value_history_max
         self.calibrating = self.value_history_max + 1
-        self.value_history_timed = list()
         #for i in range(self.value_history_max):
             #self.value_history_timed.append([0, -1])
         self.value_history = numpy.zeros(self.value_history_max)

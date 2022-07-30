@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 import statistics as stat
 from scipy.signal import savgol_filter
 from ecg_viewer_window import Ui_MainWindow
-import math
+import math, numpy
 
 
 # Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so 
@@ -27,12 +27,12 @@ def draw_graph(self):
                 polyorder = self.polyorder_box.value(),
                 mode = 'interp',
                 )[25:self.value_history_max - 25]
-            self.graph.plot([*range(len(fdat))], fdat, pen = green_pen, skipFiniteCheck = True)
+            self.graph.plot(numpy.arange(fdat.size), fdat, pen = green_pen, skipFiniteCheck = True)
         else:                                           # otherwise plot raw, unfiltered values
-            self.graph.plot([*range(len(self.value_history))], self.value_history, pen = green_pen, skipFiniteCheck = True)
+            self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
     except Exception as e:
         self.window_length_box.setValue(99)
-        self.polyorder_box.setValue(5)
+        self.polyorder_box.setValue(9)
         print(e)
 
     # Visually shows signal tracking information. VERY SLOW IF ENABLED

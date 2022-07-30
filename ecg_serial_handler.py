@@ -1,5 +1,5 @@
 import serial.tools.list_ports
-import serial, time
+import serial, time, numpy
 from PyQt5 import QtWidgets, uic, QtCore
 import statistics as stat
 from ecg_viewer_window import Ui_MainWindow
@@ -94,7 +94,7 @@ def get_input(self):
         peak_samples = 3
         temp_array = self.value_history[window:self.value_history_max - window].copy()
         temp_array.sort()
-        period_mean = stat.mean(self.value_history[window:self.value_history_max - window])
+        period_mean = self.value_history[window:self.value_history_max - window].mean()
         min_delta = period_mean - stat.mean(temp_array[0:peak_samples])
         print(temp_array[0:peak_samples])
         temp_array = temp_array[::-1]
@@ -106,8 +106,8 @@ def get_input(self):
         print("DYNAMIC CALIBRATION INFO:")
         print("RANGE     : " + str(window) + " - " + str(self.value_history_max - window))
         print("PK SAMPLES: " + str(peak_samples))
-        print("AVG MAX   : " + str(max(self.value_history[window:self.value_history_max - window])))
-        print("AVG MIN   : " + str(min(self.value_history[window:self.value_history_max - window])))
+        print("AVG MAX   : " + str(self.value_history[window:self.value_history_max - window].max()))
+        print("AVG MIN   : " + str(self.value_history[window:self.value_history_max - window].min()))
         print("MEAN      : " + str(period_mean))
         print("MAX DELTA : " + str(max_delta))
         print("MIN DELTA : " + str(min_delta))
