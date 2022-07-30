@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-VERSION = "v1.1.0-b.4 - DEV BUILD"
+VERSION = "v1.1.0-b.5 - DEV BUILD"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
