@@ -3,3 +3,4 @@ PyQt5
 pyqtgraph
 pyserial
 scipy
+Pillow

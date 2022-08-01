@@ -6,7 +6,6 @@ all:
 clean:
 	rm -rf build
 	rm -rf __pycache__
-	rm -rf profile
 	rm -f *.bin
 	rm -f *.spec
 clean-all:
@@ -15,13 +14,11 @@ clean-all:
 	rm -rf dist
 rebuild:
 	make clean
-	make build-ui
 	make
 build-ui:
-	pyrcc5 -o images_qr.py images.qrc
 	pyuic5 ecg_viewer_window.ui > ecg_viewer_window.py
 ve-build:
-	pip3 install virtualenv
+	pip3 install virtualenv --user
 	virtualenv ecg_viewer_build
 	. ./ecg_viewer_build/bin/activate
 	make install-reqs
@@ -30,5 +27,6 @@ ve-build:
 ve-delete:
 	rm -rf ecg_viewer_build
 install-reqs:
-	pip3 install -r requirements.txt
-	pip3 install pyinstaller Pillow
+	pip3 install -r requirements.txt --user
+build-icon:
+	pyrcc5 -o images_qr.py images.qrc
