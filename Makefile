@@ -2,6 +2,7 @@
 all:
 	make install-reqs
 	make build-ui
+	pip3 install pyinstaller
 	pyinstaller --windowed --clean --onedir --icon=icon/icon.png ecg_viewer.py*
 clean:
 	rm -rf build
