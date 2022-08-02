@@ -20,7 +20,7 @@
 #  MA 02110-1301, USA.
 #  
 
-VERSION = "v1.1.0-b.5 - DEV BUILD"
+VERSION = "v1.1.0"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
