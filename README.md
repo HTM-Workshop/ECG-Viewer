@@ -1,5 +1,12 @@
+<img src="icon/icon.png" width="128" height="128" align=left> 
+
 # ECG Viewer
+
 A cross-platform graphical front-end for the 'ECG Reader' sensor.
+
+### **WARNING**: This program is for educational purposes only. NOT FOR MEDICAL USE!
+
+
 
 ## Notes on binaries:
 The binaries distributed under releases are not signed. Certain versions of Windows and MacOS may prevent this program from running. The binaries are statically linked and shouldn't require any further configuration to run.
@@ -18,6 +25,7 @@ The ‘make’ command will need to be installed. Open a terminal window, type �
 ![version_1 1 0_win](https://user-images.githubusercontent.com/64606561/182402522-b2fe3eff-01d4-4bc9-ad85-041b43a4a084.png)
 ![version_1 1 0_mac](https://user-images.githubusercontent.com/64606561/182402519-286e66b4-ecd2-485e-ac6f-dc65fa093e31.png)
 ![version_1 1 0_lin](https://user-images.githubusercontent.com/64606561/182402518-d9b7552e-01ac-4c81-8674-1c34a27f5348.png)
+
 
 
 
