@@ -9,36 +9,33 @@ import math, numpy
 # Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so 
 # the graph must be cleared before it's redrawn.
 def draw_graph(self):
-    try:
-        if(self.show_track.isChecked() == False):       # run savgol filter before plotting 
+    if(self.show_track.isChecked() == False):       # run savgol filter before plotting 
+        try:
             fdat = savgol_filter(
                 self.value_history, 
                 window_length = self.window_length_box.value(), 
                 polyorder = self.polyorder_box.value(),
                 mode = 'interp',
                 )[25:self.value_history_max - 25]
-            #self.graph.plot(numpy.arange(fdat.size), fdat, pen = green_pen, skipFiniteCheck = True)
-            self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
-        else:                                           # otherwise plot raw, unfiltered values
-            self.curve.setData(numpy.arange(self.value_history.size), self.value_history, skipFiniteCheck = True)
-            #self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
-    except Exception as e:
-        self.window_length_box.setValue(99)
-        self.polyorder_box.setValue(9)
-        print(e)
+        except Exception as e:
+            self.window_length_box.setValue(99)
+            self.polyorder_box.setValue(9)
+            print(e)
+        self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
+    else:                                           # otherwise plot raw, unfiltered values
+        self.curve.setData(numpy.arange(self.value_history.size), self.value_history, skipFiniteCheck = True)
+
 
     # Visually shows signal tracking information. VERY SLOW IF ENABLED
-    if(self.show_track.isChecked() and False):
+    if(self.show_track.isChecked()):
         mean = self.value_history.mean()
-        red_pen = pg.mkPen('r', width = 2)
-        yellow_pen = pg.mkPen('y')
         center = self.detect_peaks()
-        center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = yellow_pen)
+        center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = self.yellow_pen)
         self.graph.addItem(center_line)
-        mean = pg.InfiniteLine(pos = self.mean, angle = 0, movable = False, pen = red_pen)
-        self.graph.addItem(mean)
+        mean_line = pg.InfiniteLine(pos = mean, angle = 0, movable = False, pen = self.red_pen)
+        self.graph.addItem(mean_line)
 
-        # select datapoints to graph depending on if the capture is activelly running or not
+        # select datapoints to graph depending on if the capture is actively running or not
         if(self.run == True):
             sel_peaks = self.peaks[::-1][0:2]
             sel_hold  = self.peaks[::-1][1:2]
@@ -77,3 +74,11 @@ def graph_fit(self):
         yRange = (high + pad , low - pad)
     )
 
+
+def bold_toggle(self):
+    if(self.bold_checkBox.isChecked()):
+        self.green_pen = pg.mkPen('g', width = 2)
+    else:
+        self.green_pen = pg.mkPen('g', width = 1)
+    self.graph.clear()
+    self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
