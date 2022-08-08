@@ -9,16 +9,6 @@ import math, numpy
 # Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so 
 # the graph must be cleared before it's redrawn.
 def draw_graph(self):
-    red_pen = pg.mkPen('r', width = 2)
-    if self.bold_checkBox.isChecked():
-        green_pen = pg.mkPen('g', width = 2)
-    else:
-        green_pen = pg.mkPen('g')
-    yellow_pen = pg.mkPen('y')
-    self.graph.clear()                                  # does the actual graph clearing
-    #self.mean = stat.mean(self.value_history)
-    self.mean = self.value_history.mean()
-    #center = (max(self.value_history) - ((max(self.value_history) - min(self.value_history)) / 2))
     try:
         if(self.show_track.isChecked() == False):       # run savgol filter before plotting 
             fdat = savgol_filter(
@@ -27,16 +17,21 @@ def draw_graph(self):
                 polyorder = self.polyorder_box.value(),
                 mode = 'interp',
                 )[25:self.value_history_max - 25]
-            self.graph.plot(numpy.arange(fdat.size), fdat, pen = green_pen, skipFiniteCheck = True)
+            #self.graph.plot(numpy.arange(fdat.size), fdat, pen = green_pen, skipFiniteCheck = True)
+            self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
         else:                                           # otherwise plot raw, unfiltered values
-            self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
+            self.curve.setData(numpy.arange(self.value_history.size), self.value_history, skipFiniteCheck = True)
+            #self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
     except Exception as e:
         self.window_length_box.setValue(99)
         self.polyorder_box.setValue(9)
         print(e)
 
     # Visually shows signal tracking information. VERY SLOW IF ENABLED
-    if(self.show_track.isChecked()):
+    if(self.show_track.isChecked() and False):
+        mean = self.value_history.mean()
+        red_pen = pg.mkPen('r', width = 2)
+        yellow_pen = pg.mkPen('y')
         center = self.detect_peaks()
         center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = yellow_pen)
         self.graph.addItem(center_line)
