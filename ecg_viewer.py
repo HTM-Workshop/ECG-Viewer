@@ -20,7 +20,7 @@
 #  MA 02110-1301, USA.
 #  
 
-VERSION = "v1.1.0"
+VERSION = "v1.2.0-prebuild - DEVBUILD"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
@@ -66,6 +66,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_force_invert.clicked.connect(self.force_invert)
         self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
         self.bold_checkBox.stateChanged.connect(self.bold_toggle)
+        self.show_track.stateChanged.connect(self.reset)
         self.button_run.setDisabled(True)
         
         # set tooltips
@@ -81,7 +82,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_zoom_slider.setToolTip("Changes the vertical zoom of the graph.")
         self.window_length_box.setToolTip("Higher values give more consistent filtering, but increases bias error. VALUE MUST BE ODD.")
         self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
-        self.bold_checkBox.setToolTip("Draws graph with thicker line. Reduces visual accuracy.")
+        self.bold_checkBox.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
         
         # connection status
         self.ser = None
