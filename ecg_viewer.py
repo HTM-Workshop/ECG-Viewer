@@ -89,21 +89,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # perform initial com port check
         self.com_refresh()  
         
-        # graph properties
-        self.graph.showGrid(True, True, alpha = 0.5)  
-        self.graph_padding_factor = 0.667
-        
         # data variables
         self.current_reading = 0
         self.value_history_max = 2500
         #self.value_history = [0] * self.value_history_max
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
-        self.mean = 0 
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
         self.peaks = list()
 
+        # graph properties
+        self.graph.showGrid(True, True, alpha = 0.5)  
+        self.graph_padding_factor = 0.667
+        green_pen = pg.mkPen('g', width = 1)
+        self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
+        
+        print(type(self.curve))
+        
         # run state
         self.run = True
 
