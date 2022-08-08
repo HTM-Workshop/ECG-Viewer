@@ -65,6 +65,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_export.clicked.connect(self.export_data)
         self.button_force_invert.clicked.connect(self.force_invert)
         self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
+        self.bold_checkBox.stateChanged.connect(self.bold_toggle)
         self.button_run.setDisabled(True)
         
         # set tooltips
@@ -92,7 +93,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # data variables
         self.current_reading = 0
         self.value_history_max = 2500
-        #self.value_history = [0] * self.value_history_max
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
         self.invert_modifier = 1
@@ -102,10 +102,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph properties
         self.graph.showGrid(True, True, alpha = 0.5)  
         self.graph_padding_factor = 0.667
-        green_pen = pg.mkPen('g', width = 1)
-        self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = green_pen, skipFiniteCheck = True)
-        
-        print(type(self.curve))
+        self.green_pen = pg.mkPen('g', width = 2)
+        self.red_pen = pg.mkPen('r', width = 2)
+        self.yellow_pen = pg.mkPen('y')
         
         # run state
         self.run = True
@@ -121,7 +120,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from ecg_serial_handler import com_connect, com_refresh, get_input
-    from ecg_grapher import draw_graph, graph_fit
+    from ecg_grapher import draw_graph, graph_fit, bold_toggle
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, run_toggle, export_data
     
@@ -134,12 +133,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             
     # resets all history, including calibration
     def reset(self):
+        self.graph.clear()
+        self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         self.capture_index = 0
         self.alarm_off()
         self.rate_alarm_active = False 
         self.calibrating = self.value_history_max + 1
-        #for i in range(self.value_history_max):
-            #self.value_history_timed.append([0, -1])
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
 
