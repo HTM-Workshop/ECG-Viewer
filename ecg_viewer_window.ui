@@ -320,13 +320,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="button_export">
-           <property name="text">
-            <string>Export</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
       </layout>
@@ -363,7 +356,7 @@
         <number>0</number>
        </property>
        <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -591,16 +584,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QCheckBox" name="bold_checkBox">
-           <property name="text">
-            <string>Bold Line</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item row="3" column="0">
@@ -648,6 +631,138 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>847</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuExport">
+    <property name="title">
+     <string>Graph</string>
+    </property>
+    <widget class="QMenu" name="menuExport_Data">
+     <property name="title">
+      <string>Export Data</string>
+     </property>
+     <addaction name="actionPNG_2"/>
+     <addaction name="actionCSV_2"/>
+     <addaction name="actionRAW_2"/>
+    </widget>
+    <widget class="QMenu" name="menuRefresh_Rate">
+     <property name="title">
+      <string>Refresh Rate</string>
+     </property>
+     <addaction name="action30_FPS"/>
+     <addaction name="action15_FPS"/>
+     <addaction name="action8_FPS"/>
+    </widget>
+    <addaction name="menuExport_Data"/>
+    <addaction name="menuRefresh_Rate"/>
+    <addaction name="actionBold_Line"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuExport"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionPNG">
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionCSV">
+   <property name="text">
+    <string>CSV</string>
+   </property>
+  </action>
+  <action name="actionRAW">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>RAW</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionPNG_2">
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionCSV_2">
+   <property name="text">
+    <string>CSV</string>
+   </property>
+  </action>
+  <action name="actionRAW_2">
+   <property name="text">
+    <string>RAW</string>
+   </property>
+  </action>
+  <action name="actionBold_Line">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bold Line</string>
+   </property>
+  </action>
+  <actiongroup name="GroupTool">
+   <action name="action30_FPS">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>30 FPS</string>
+    </property>
+   </action>
+   <action name="action15_FPS">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>15 FPS</string>
+    </property>
+   </action>
+   <action name="action8_FPS">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>8 FPS</string>
+    </property>
+   </action>
+  </actiongroup>
  </widget>
  <customwidgets>
   <customwidget>
