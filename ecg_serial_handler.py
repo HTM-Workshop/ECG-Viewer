@@ -1,15 +1,17 @@
+from zoneinfo import available_timezones
 import serial.tools.list_ports
 import serial, time, numpy
 from PyQt5 import QtWidgets, uic, QtCore
 import statistics as stat
 from ecg_viewer_window import Ui_MainWindow
+
 # refresh available devices, store in dropdown menu storage    
 def com_refresh(self):
     self.port_combo_box.clear()
-    self.available_ports = serial.tools.list_ports.comports()
-    for i in self.available_ports:
-        self.port_combo_box.addItem(i.device)  
-    com_count = self.port_combo_box.count()    
+    available_ports = serial.tools.list_ports.comports()
+    for device in available_ports:
+        d_name = device.device + ": " + device.description
+        self.port_combo_box.addItem(d_name)
 
 # connect to device
 def com_connect(self):
@@ -18,7 +20,7 @@ def com_connect(self):
     if(self.ser == None):
         try:
             self.statusBar.showMessage("Connecting...")
-            self.com_port = self.port_combo_box.currentText()
+            self.com_port = self.port_combo_box.currentText().split(':')[0]
             if(self.com_port == ''):
                 self.statusBar.showMessage('No device selected!')
                 return
