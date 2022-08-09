@@ -84,7 +84,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
         self.bold_checkBox.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
         
-        # connection status
+        # Serial Variables
         self.ser = None
         self.com_port = ''
 
