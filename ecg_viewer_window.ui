@@ -734,7 +734,7 @@
     <string>Bold Line</string>
    </property>
   </action>
-  <actiongroup name="GroupTool">
+  <actiongroup name="FPSGroup">
    <action name="action30_FPS">
     <property name="checkable">
      <bool>true</bool>

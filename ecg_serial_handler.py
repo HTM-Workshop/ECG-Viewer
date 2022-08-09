@@ -130,3 +130,4 @@ def get_input(self):
             error_message.exec_()
             self.reset()
             self.com_connect()
+

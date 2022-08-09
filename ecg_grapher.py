@@ -72,11 +72,17 @@ def graph_fit(self):
         yRange = (high + pad , low - pad)
     )
 
-
 def bold_toggle(self):
-    if(self.bold_checkBox.isChecked()):
+    if(self.actionBold_Line.isChecked()):
         self.green_pen = pg.mkPen('g', width = 2)
     else:
         self.green_pen = pg.mkPen('g', width = 1)
     self.graph.clear()
     self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
+
+def restart_graph_timer(self): 
+    self.graph_frame_rate = self.FPSGroup.checkedAction().data()
+    self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
+    if(self.graph_timer.isActive()):
+        self.graph_timer.stop()
+        self.graph_timer.start(self.graph_timer_ms)
