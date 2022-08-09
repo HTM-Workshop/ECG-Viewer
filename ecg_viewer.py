@@ -56,18 +56,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_timer.timeout.connect(self.draw_graph)
         self.graph_frame_rate = 15                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
+
+        # set graph update menu metadata
+        self.action30_FPS.setData(30)
+        self.action15_FPS.setData(15)
+        self.action8_FPS.setData(8)
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
         self.button_connect.clicked.connect(self.com_connect)  
         self.button_reset.clicked.connect(self.reset)
         self.button_run.clicked.connect(self.run_toggle)
-        self.button_export.clicked.connect(self.export_data)
+        #self.button_export.clicked.connect(self.export_data)
         self.button_force_invert.clicked.connect(self.force_invert)
         self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
-        self.bold_checkBox.stateChanged.connect(self.bold_toggle)
         self.show_track.stateChanged.connect(self.reset)
         self.button_run.setDisabled(True)
+        self.actionBold_Line.toggled.connect(self.bold_toggle)
+        self.FPSGroup.triggered.connect(self.restart_graph_timer)
         
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
@@ -76,13 +82,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.show_track.setToolTip("Show the real-time peak detection. Disables filtering while on")
         self.button_reset.setToolTip("Clears graph data. Forces recalibration.")
         self.button_run.setToolTip("Pauses data capture.")
-        self.button_export.setToolTip("Export the displayed waveform as a raw binary file.")
+        #self.button_export.setToolTip("Export the displayed waveform as a raw binary file.")
         self.button_refresh.setToolTip("Refresh the list of connected devices.")
         self.button_connect.setToolTip("Connected to the selected device.")
         self.graph_zoom_slider.setToolTip("Changes the vertical zoom of the graph.")
         self.window_length_box.setToolTip("Higher values give more consistent filtering, but increases bias error. VALUE MUST BE ODD.")
         self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
-        self.bold_checkBox.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
+        self.actionBold_Line.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
         
         # Serial Variables
         self.ser = None
@@ -121,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from ecg_serial_handler import com_connect, com_refresh, get_input
-    from ecg_grapher import draw_graph, graph_fit, bold_toggle
+    from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, run_toggle, export_data
     
@@ -142,6 +148,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.calibrating = self.value_history_max + 1
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
+
+    def debug(self):
+        print("DEBUG")
 
 def check_resolution(app):
     screen = app.primaryScreen().size()
@@ -167,7 +176,6 @@ def main():
     main.show()
     check_resolution(app)   
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
