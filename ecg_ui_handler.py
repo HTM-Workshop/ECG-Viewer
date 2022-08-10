@@ -1,3 +1,4 @@
+from email.policy import default
 from PyQt5 import QtWidgets, uic, QtCore
 import pyqtgraph.exporters
 import time, csv
@@ -42,17 +43,16 @@ def show_about(self):
 # exports data stored in self.value_history to a binary file 
 def export_data_raw(self):
     try:
-        filename = str(time.time()).split('.')[0] + '.bin'
+        default_filename = str(time.time()).split('.')[0] + '.bin'
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+        if(filename == ""):
+            return
         f = open(filename, 'wb')
         data = [int(abs(x)).to_bytes(2, 'little') for x in self.value_history]
         data = b''.join(data) 
         f.write(data)
         f.flush()
         f.close()
-        message = QtWidgets.QMessageBox()
-        message.setWindowTitle("Export Success")
-        message.setText("Raw binary record has been exported to the local directory.")
-        message.exec_()
     except Exception as e:
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Export Error")
@@ -62,14 +62,13 @@ def export_data_raw(self):
 
 def export_data_png(self):
     try:
-        filename = "ECG_" + str(time.time()).split('.')[0] + ".png"
+        default_filename = str(time.time()).split('.')[0] + '.png'
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+        if(filename == ""):
+            return
         QtCore.QCoreApplication.processEvents()
         exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
         exporter.export(filename)
-        message = QtWidgets.QMessageBox()
-        message.setWindowTitle("Export Success")
-        message.setText("PNG image has been exported to the local directory.")
-        message.exec_()
     except Exception as e:
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Export Error")
@@ -79,16 +78,15 @@ def export_data_png(self):
 
 def export_data_csv(self):
     try:
-        filename = str(time.time()).split('.')[0] + '.csv'
+        default_filename = str(time.time()).split('.')[0] + '.csv'
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+        if(filename == ""):
+            return
         csv_file = open(filename, 'w', newline = '')
         writer = csv.writer(csv_file)
         writer.writerow(self.value_history)
         csv_file.flush()
-        csv_file.close()
-        message = QtWidgets.QMessageBox()
-        message.setWindowTitle("Export Success")
-        message.setText("CSV has been exported to the local directory.")
-        message.exec_()        
+        csv_file.close()      
     except Exception as e:
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Export Error")
