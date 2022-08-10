@@ -46,7 +46,7 @@ class Ui_about_window(object):
 
     def retranslateUi(self, about_window):
         _translate = QtCore.QCoreApplication.translate
-        about_window.setWindowTitle(_translate("about_window", "Dialog"))
+        about_window.setWindowTitle(_translate("about_window", "About"))
         self.title.setText(_translate("about_window", "ECG Viewer"))
         self.version.setText(_translate("about_window", "VERSION PLACEHOLDER + BUILD DATE"))
         self.textBrowser.setHtml(_translate("about_window", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

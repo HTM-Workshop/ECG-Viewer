@@ -667,6 +667,7 @@
      <addaction name="action8_FPS"/>
     </widget>
     <addaction name="menuExport_Data"/>
+    <addaction name="separator"/>
     <addaction name="menuRefresh_Rate"/>
     <addaction name="actionBold_Line"/>
    </widget>
