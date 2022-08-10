@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets, uic, QtCore
-import time
+import pyqtgraph.exporters
+import time, csv
 
 # message box methods
 def alarm_on(self, text):
@@ -35,7 +36,7 @@ def run_toggle(self):
             self.capture_timer.start(self.capture_rate_ms)
 
 # exports data stored in self.value_history to a binary file 
-def export_data(self):
+def export_data_raw(self):
     try:
         filename = str(time.time()).split('.')[0] + '.bin'
         f = open(filename, 'wb')
@@ -46,7 +47,7 @@ def export_data(self):
         f.close()
         message = QtWidgets.QMessageBox()
         message.setWindowTitle("Export Success")
-        message.setText("Raw binary record has been exported to the local directory")
+        message.setText("Raw binary record has been exported to the local directory.")
         message.exec_()
     except Exception as e:
         error_message = QtWidgets.QMessageBox()
@@ -54,3 +55,23 @@ def export_data(self):
         error_message.setText(str(e))
         error_message.exec_()
         print(e)
+
+def export_data_png(self):
+    try:
+        filename = str(time.time()).split('.')[0] + '.png'
+        QtCore.QCoreApplication.processEvents()
+        exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
+        exporter.export(filename)
+        message = QtWidgets.QMessageBox()
+        message.setWindowTitle("Export Success")
+        message.setText("PNG image has been exported to the local directory.")
+        message.exec_()
+    except Exception as e:
+        error_message = QtWidgets.QMessageBox()
+        error_message.setWindowTitle("Export Error")
+        error_message.setText(str(e))
+        error_message.exec_()
+        print(e)
+
+def export_data_csv(self):
+    pass
