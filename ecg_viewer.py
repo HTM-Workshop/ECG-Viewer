@@ -43,6 +43,8 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
         super(AboutWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.version.setText(VERSION)
+        self.icon.setPixmap(QtGui.QPixmap(":/icon/icon.png"))
+        self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
