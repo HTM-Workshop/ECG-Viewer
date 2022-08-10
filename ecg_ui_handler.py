@@ -38,6 +38,7 @@ def run_toggle(self):
 def show_about(self):
     self.about_window.show()
 
+# ISSUE: These export options fail on MacOS when compiled to a .apps 
 # exports data stored in self.value_history to a binary file 
 def export_data_raw(self):
     try:
