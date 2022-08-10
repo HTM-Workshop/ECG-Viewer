@@ -76,6 +76,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.FPSGroup.triggered.connect(self.restart_graph_timer)
         self.actionRAW_2.triggered.connect(self.export_data_raw)
         self.actionPNG_2.triggered.connect(self.export_data_png)
+        self.actionCSV_2.triggered.connect(self.export_data_csv)
         
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")

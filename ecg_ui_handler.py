@@ -58,7 +58,7 @@ def export_data_raw(self):
 
 def export_data_png(self):
     try:
-        filename = str(time.time()).split('.')[0] + '.png'
+        filename = "ECG_" + str(time.time()).split('.')[0] + ".png"
         QtCore.QCoreApplication.processEvents()
         exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
         exporter.export(filename)
@@ -74,4 +74,20 @@ def export_data_png(self):
         print(e)
 
 def export_data_csv(self):
-    pass
+    try:
+        filename = str(time.time()).split('.')[0] + '.csv'
+        csv_file = open(filename, 'w', newline = '')
+        writer = csv.writer(csv_file)
+        writer.writerow(self.value_history)
+        csv_file.flush()
+        csv_file.close()
+        message = QtWidgets.QMessageBox()
+        message.setWindowTitle("Export Success")
+        message.setText("CSV has been exported to the local directory.")
+        message.exec_()        
+    except Exception as e:
+        error_message = QtWidgets.QMessageBox()
+        error_message.setWindowTitle("Export Error")
+        error_message.setText(str(e))
+        error_message.exec_()
+        print(e)

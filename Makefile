@@ -8,6 +8,8 @@ clean:
 	rm -rf __pycache__
 	rm -f *.bin
 	rm -f *.spec
+	rm -f ECG_*.png
+	rm -f *csv
 clean-all:
 	rm -f *.spec
 	make clean
