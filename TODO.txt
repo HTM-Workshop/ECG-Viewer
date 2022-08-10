@@ -1,9 +1,9 @@
-Add option to export PNG, CSV, or RAW data from graph
-    - Still need to connect to methods - DONE
-    - Fix MacOS export issues
 Create axes for the graph. Look into adding units for graph itself. 
 
 
+Add option to export PNG, CSV, or RAW data from graph - DONE
+    - Still need to connect to methods - DONE
+    - Fix MacOS export issues - DONE
 Add 'About' information window, connect to menu bar - DONE
 Add FPS selection option - DONE
 Add USB device names to devices dropdown menu - DONE
