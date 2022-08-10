@@ -35,6 +35,9 @@ def run_toggle(self):
             self.button_run.setText("Stop")
             self.capture_timer.start(self.capture_rate_ms)
 
+def show_about(self):
+    self.about_window.show()
+
 # exports data stored in self.value_history to a binary file 
 def export_data_raw(self):
     try:
