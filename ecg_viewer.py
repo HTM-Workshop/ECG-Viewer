@@ -88,6 +88,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionPNG_2.triggered.connect(self.export_data_png)
         self.actionCSV_2.triggered.connect(self.export_data_csv)
         self.actionAbout.triggered.connect(self.show_about)
+        self.actionQuit.triggered.connect(sys.exit)
         
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
