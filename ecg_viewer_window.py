@@ -309,6 +309,7 @@ class Ui_MainWindow(object):
         self.menuRefresh_Rate.addAction(self.action15_FPS)
         self.menuRefresh_Rate.addAction(self.action8_FPS)
         self.menuExport.addAction(self.menuExport_Data.menuAction())
+        self.menuExport.addSeparator()
         self.menuExport.addAction(self.menuRefresh_Rate.menuAction())
         self.menuExport.addAction(self.actionBold_Line)
         self.menuHelp.addAction(self.actionAbout)
