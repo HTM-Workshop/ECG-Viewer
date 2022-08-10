@@ -182,6 +182,7 @@ def print_sys_info():
     print(time.ctime())
     print(platform.platform())
     print("Python Version: " + platform.python_version())
+    print("Directory: " + os.getcwd())
     print('-' * 80)
 
 def main():
