@@ -42,6 +42,7 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
     def __init__(self, *args, **kwargs):
         super(AboutWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
+        self.version.setText(VERSION)
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
