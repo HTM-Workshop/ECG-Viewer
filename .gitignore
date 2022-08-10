@@ -9,3 +9,6 @@ dist/
 dev_profile/
 old_builds/
 *.code-workspace
+ECG*.png
+*.csv
+export/
