@@ -20,7 +20,7 @@
 #  MA 02110-1301, USA.
 #  
 
-VERSION = "v2.0.0-PREBUILD DEVBUILD"
+VERSION = "v2.0.0-b.1"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
