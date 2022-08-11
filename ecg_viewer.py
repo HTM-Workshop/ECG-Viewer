@@ -58,7 +58,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.do_update)
-        self.capture_rate_ms = 1
+        self.capture_rate_ms = 0
         self.capture_timer_qt = QtCore.QElapsedTimer()
         self.capture_index = 0
         
@@ -72,10 +72,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action30_FPS.setData(30)
         self.action15_FPS.setData(15)
         self.action8_FPS.setData(8)
-        self.actionFastest.setData(0)
-        self.actionFast.setData(1)
-        self.actionMedium.setData(3)
-        self.actionSlow.setData(5)
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
@@ -93,7 +89,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionCSV.triggered.connect(self.export_data_csv)
         self.actionAbout.triggered.connect(self.show_about)
         self.actionQuit.triggered.connect(sys.exit)
-        self.CaptureRateGroup.triggered.connect(self.restart_capture_timer)
         
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
@@ -118,7 +113,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # data variables
         self.current_reading = 0
-        self.value_history_max = 2500
+        self.value_history_max = 5000
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
         self.invert_modifier = 1

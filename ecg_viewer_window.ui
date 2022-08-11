@@ -675,26 +675,7 @@
     <addaction name="actionCSV"/>
     <addaction name="actionRAW"/>
    </widget>
-   <widget class="QMenu" name="menuCapture">
-    <property name="title">
-     <string>Capture</string>
-    </property>
-    <widget class="QMenu" name="menuUpdate_Rate">
-     <property name="title">
-      <string>Update Rate</string>
-     </property>
-     <addaction name="actionFastest"/>
-     <addaction name="actionFast"/>
-     <addaction name="actionMedium"/>
-     <addaction name="actionSlow"/>
-    </widget>
-    <addaction name="menuUpdate_Rate"/>
-    <addaction name="separator"/>
-    <addaction name="actionStart_Stop"/>
-    <addaction name="actionClear"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuCapture"/>
    <addaction name="menuExport"/>
    <addaction name="menuExport_2"/>
    <addaction name="menuHelp"/>
@@ -740,48 +721,48 @@
     <string>Reset</string>
    </property>
   </action>
-  <actiongroup name="CaptureRateGroup">
-  <action name="actionFastest">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Fastest (unstable)</string>
-   </property>
-  </action>
-  <action name="actionFast">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Fast</string>
-   </property>
-  </action>
-  <action name="actionMedium">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Medium</string>
-   </property>
-  </action>
-  <action name="actionSlow">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Slow</string>
-   </property>
-  </action>
-  </actiongroup>
   <action name="actionStart_Stop">
    <property name="text">
     <string>Start / Stop</string>
    </property>
   </action>
+  <actiongroup name="CaptureRateGroup">
+   <action name="actionFastest">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Fastest (unstable)</string>
+    </property>
+   </action>
+   <action name="actionFast">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Fast</string>
+    </property>
+   </action>
+   <action name="actionMedium">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Medium</string>
+    </property>
+   </action>
+   <action name="actionSlow">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Slow</string>
+    </property>
+   </action>
+  </actiongroup>
   <actiongroup name="FPSGroup">
    <action name="action30_FPS">
     <property name="checkable">
