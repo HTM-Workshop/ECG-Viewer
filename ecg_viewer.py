@@ -20,7 +20,7 @@
 #  MA 02110-1301, USA.
 #  
 
-VERSION = "v1.2.0-b.1 - DEV BUILD"
+VERSION = "v2.0.0-PREBUILD DEVBUILD"
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
@@ -65,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # graph timer
         self.graph_timer = QtCore.QTimer()
         self.graph_timer.timeout.connect(self.draw_graph)
-        self.graph_frame_rate = 15                                 # change to adjust refresh rate
+        self.graph_frame_rate = 30                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
 
         # set menu option metadata
