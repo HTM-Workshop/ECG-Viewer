@@ -68,10 +68,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph_frame_rate = 15                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
 
-        # set graph update menu metadata
+        # set menu option metadata
         self.action30_FPS.setData(30)
         self.action15_FPS.setData(15)
         self.action8_FPS.setData(8)
+        self.actionFastest.setData(0)
+        self.actionFast.setData(1)
+        self.actionMedium.setData(3)
+        self.actionSlow.setData(5)
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
@@ -89,6 +93,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionCSV.triggered.connect(self.export_data_csv)
         self.actionAbout.triggered.connect(self.show_about)
         self.actionQuit.triggered.connect(sys.exit)
+        self.CaptureRateGroup.triggered.connect(self.restart_capture_timer)
         
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
@@ -140,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.reset()
 
     # import class methods
-    from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, stop_capture_timer
+    from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, stop_capture_timer, restart_capture_timer
     from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
