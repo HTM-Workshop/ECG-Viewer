@@ -76,14 +76,14 @@ def get_input(self):
         return
 
     try:
-        if buf[0] != 'a':
+        if buf[0] != '$':
             return
         # buf = buf.strip('a')
         # buf = buf.strip('\n')
         # buf = buf.replace('\r', '')
         # buf = buf.split('\n')[0]
         buf = buf.replace('\r', '')
-        buf = buf[1:buf.find('\n')].strip('\n')
+        buf = buf[1:buf.find('\n')].strip('\n')     # start slice at 1 to drop '$' character
         if buf == '' or len(buf) != 3:
             return
         # for c in buf:
