@@ -140,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.reset()
 
     # import class methods
-    from ecg_serial_handler import com_connect, com_refresh, get_input
+    from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, stop_capture_timer
     from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
