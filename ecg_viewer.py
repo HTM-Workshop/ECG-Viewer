@@ -84,9 +84,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_run.setDisabled(True)
         self.actionBold_Line.toggled.connect(self.bold_toggle)
         self.FPSGroup.triggered.connect(self.restart_graph_timer)
-        self.actionRAW_2.triggered.connect(self.export_data_raw)
-        self.actionPNG_2.triggered.connect(self.export_data_png)
-        self.actionCSV_2.triggered.connect(self.export_data_csv)
+        self.actionRAW.triggered.connect(self.export_data_raw)
+        self.actionPNG.triggered.connect(self.export_data_png)
+        self.actionCSV.triggered.connect(self.export_data_csv)
         self.actionAbout.triggered.connect(self.show_about)
         self.actionQuit.triggered.connect(sys.exit)
         

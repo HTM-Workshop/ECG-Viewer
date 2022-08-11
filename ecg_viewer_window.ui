@@ -650,14 +650,6 @@
     <property name="title">
      <string>Graph</string>
     </property>
-    <widget class="QMenu" name="menuExport_Data">
-     <property name="title">
-      <string>Export Data</string>
-     </property>
-     <addaction name="actionPNG_2"/>
-     <addaction name="actionCSV_2"/>
-     <addaction name="actionRAW_2"/>
-    </widget>
     <widget class="QMenu" name="menuRefresh_Rate">
      <property name="title">
       <string>Refresh Rate</string>
@@ -666,8 +658,6 @@
      <addaction name="action15_FPS"/>
      <addaction name="action8_FPS"/>
     </widget>
-    <addaction name="menuExport_Data"/>
-    <addaction name="separator"/>
     <addaction name="menuRefresh_Rate"/>
     <addaction name="actionBold_Line"/>
    </widget>
@@ -677,13 +667,38 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuExport_2">
+    <property name="title">
+     <string>Export</string>
+    </property>
+    <addaction name="actionPNG"/>
+    <addaction name="actionCSV"/>
+    <addaction name="actionRAW"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuExport"/>
+   <addaction name="menuExport_2"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionBold_Line">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Bold Line</string>
    </property>
   </action>
   <action name="actionPNG">
@@ -697,42 +712,8 @@
    </property>
   </action>
   <action name="actionRAW">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>RAW</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
-  <action name="actionPNG_2">
-   <property name="text">
-    <string>PNG</string>
-   </property>
-  </action>
-  <action name="actionCSV_2">
-   <property name="text">
-    <string>CSV</string>
-   </property>
-  </action>
-  <action name="actionRAW_2">
-   <property name="text">
-    <string>RAW</string>
-   </property>
-  </action>
-  <action name="actionBold_Line">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Bold Line</string>
    </property>
   </action>
   <actiongroup name="FPSGroup">
