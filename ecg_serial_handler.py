@@ -131,3 +131,10 @@ def get_input(self):
             self.reset()
             self.com_connect()
 
+def stop_capture_timer(self):
+    if(self.capture_timer.isActive()):
+        self.capture_timer.stop()
+
+def start_capture_timer(self):
+    if(not self.capture_timer.isActive()):
+        self.capture_timer.start(self.capture_rate_ms)

@@ -42,54 +42,57 @@ def show_about(self):
 # ISSUE: These export options fail on MacOS when compiled to a .apps 
 # exports data stored in self.value_history to a binary file 
 def export_data_raw(self):
-    try:
-        default_filename = str(time.time()).split('.')[0] + '.bin'
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
-        if(filename == ""):
-            return
-        f = open(filename, 'wb')
-        data = [int(abs(x)).to_bytes(2, 'little') for x in self.value_history]
-        data = b''.join(data) 
-        f.write(data)
-        f.flush()
-        f.close()
-    except Exception as e:
-        error_message = QtWidgets.QMessageBox()
-        error_message.setWindowTitle("Export Error")
-        error_message.setText(str(e))
-        error_message.exec_()
-        print(e)
+    self.stop_capture_timer()
+    default_filename = str(time.time()).split('.')[0] + '.bin'
+    filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+    if(filename != ""):
+        try:
+            f = open(filename, 'wb')
+            data = [int(abs(x)).to_bytes(2, 'little') for x in self.value_history]
+            data = b''.join(data) 
+            f.write(data)
+            f.flush()
+            f.close()
+        except Exception as e:
+            error_message = QtWidgets.QMessageBox()
+            error_message.setWindowTitle("Export Error")
+            error_message.setText(str(e))
+            error_message.exec_()
+            print(e)
+    self.start_capture_timer()
 
 def export_data_png(self):
-    try:
-        default_filename = str(time.time()).split('.')[0] + '.png'
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
-        if(filename == ""):
-            return
-        QtCore.QCoreApplication.processEvents()
-        exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
-        exporter.export(filename)
-    except Exception as e:
-        error_message = QtWidgets.QMessageBox()
-        error_message.setWindowTitle("Export Error")
-        error_message.setText(str(e))
-        error_message.exec_()
-        print(e)
+    self.stop_capture_timer()
+    default_filename = str(time.time()).split('.')[0] + '.png'
+    filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+    if(filename != ""):
+        try:
+            QtCore.QCoreApplication.processEvents()
+            exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
+            exporter.export(filename)
+        except Exception as e:
+            error_message = QtWidgets.QMessageBox()
+            error_message.setWindowTitle("Export Error")
+            error_message.setText(str(e))
+            error_message.exec_()
+            print(e)
+    self.start_capture_timer()
 
 def export_data_csv(self):
-    try:
-        default_filename = str(time.time()).split('.')[0] + '.csv'
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
-        if(filename == ""):
-            return
-        csv_file = open(filename, 'w', newline = '')
-        writer = csv.writer(csv_file)
-        writer.writerow(self.value_history)
-        csv_file.flush()
-        csv_file.close()      
-    except Exception as e:
-        error_message = QtWidgets.QMessageBox()
-        error_message.setWindowTitle("Export Error")
-        error_message.setText(str(e))
-        error_message.exec_()
-        print(e)
+    self.stop_capture_timer()
+    default_filename = str(time.time()).split('.')[0] + '.csv'
+    filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
+    if(filename != ""):
+        try:
+            csv_file = open(filename, 'w', newline = '')
+            writer = csv.writer(csv_file)
+            writer.writerow(self.value_history)
+            csv_file.flush()
+            csv_file.close()      
+        except Exception as e:
+            error_message = QtWidgets.QMessageBox()
+            error_message.setWindowTitle("Export Error")
+            error_message.setText(str(e))
+            error_message.exec_()
+            print(e)
+    self.start_capture_timer()
