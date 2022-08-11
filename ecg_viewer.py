@@ -150,6 +150,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def do_update(self):
         self.get_input()
         if(self.capture_index == 0 and self.calibrating == -1):
+            self.ser.reset_input_buffer()
             self.graph_fit()
             self.update_hr()
             
