@@ -72,10 +72,24 @@ def get_input(self):
         buf = buf + c
         if c == '\n':
             break
+    if buf == '':
+        return
+
     try:
-        buf = buf.strip('\n')
+        if buf[0] != 'a':
+            return
+        # buf = buf.strip('a')
+        # buf = buf.strip('\n')
+        # buf = buf.replace('\r', '')
+        # buf = buf.split('\n')[0]
         buf = buf.replace('\r', '')
-        buf = buf.split('\n')[0]
+        buf = buf[1:buf.find('\n')].strip('\n')
+        if buf == '' or len(buf) != 3:
+            return
+        # for c in buf:
+        #     print(str(hex(ord(c))) + ' ', end = '')
+        # print('\n')
+
         self.current_reading = float(buf)
         #assert(self.invert_modifier == 1 or self.invert_modifier == -1)
         val = self.invert_modifier * self.current_reading
@@ -138,3 +152,9 @@ def stop_capture_timer(self):
 def start_capture_timer(self):
     if(not self.capture_timer.isActive()):
         self.capture_timer.start(self.capture_rate_ms)
+
+def restart_capture_timer(self):
+    self.capture_rate_ms = self.CaptureRateGroup.checkedAction().data()
+    self.capture_timer.stop()
+    self.capture_timer.start(self.capture_rate_ms)
+
