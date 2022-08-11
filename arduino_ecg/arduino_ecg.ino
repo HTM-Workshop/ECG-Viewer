@@ -12,5 +12,4 @@ void loop(void) {
     }
     sprintf(buf, "a%03d\n", analogRead(A0));
     Serial.println(buf);
-    Serial.flush();
 }

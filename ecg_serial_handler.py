@@ -150,11 +150,14 @@ def stop_capture_timer(self):
         self.capture_timer.stop()
 
 def start_capture_timer(self):
+    self.ser.reset_input_buffer()
     if(not self.capture_timer.isActive()):
         self.capture_timer.start(self.capture_rate_ms)
 
 def restart_capture_timer(self):
+    self.ser.reset_input_buffer()
     self.capture_rate_ms = self.CaptureRateGroup.checkedAction().data()
-    self.capture_timer.stop()
-    self.capture_timer.start(self.capture_rate_ms)
+    if(self.capture_timer.isActive()):
+        self.capture_timer.stop()
+        self.capture_timer.start(self.capture_rate_ms)
 
