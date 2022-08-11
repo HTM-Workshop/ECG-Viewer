@@ -435,13 +435,16 @@
             <number>-1</number>
            </property>
            <property name="maximum">
-            <number>300</number>
+            <number>1000</number>
            </property>
            <property name="singleStep">
             <number>10</number>
            </property>
+           <property name="stepType">
+            <enum>QAbstractSpinBox::DefaultStepType</enum>
+           </property>
            <property name="value">
-            <number>150</number>
+            <number>300</number>
            </property>
           </widget>
          </item>
@@ -481,13 +484,13 @@
             </size>
            </property>
            <property name="maximum">
-            <number>299</number>
+            <number>499</number>
            </property>
            <property name="singleStep">
             <number>2</number>
            </property>
            <property name="value">
-            <number>99</number>
+            <number>199</number>
            </property>
           </widget>
          </item>
@@ -768,6 +771,9 @@
     <property name="checkable">
      <bool>true</bool>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
     <property name="text">
      <string>30 FPS</string>
     </property>
@@ -777,7 +783,7 @@
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="text">
      <string>15 FPS</string>
