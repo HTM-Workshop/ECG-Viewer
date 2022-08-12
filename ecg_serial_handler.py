@@ -1,4 +1,3 @@
-from zoneinfo import available_timezones
 import serial.tools.list_ports
 import serial, time, numpy
 from PyQt5 import QtWidgets, uic, QtCore
