@@ -81,6 +81,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.button_force_invert.clicked.connect(self.force_invert)
         self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
         self.show_track.stateChanged.connect(self.reset)
+        self.FPSGroup.triggered.connect(self.restart_graph_timer)
         self.button_run.setDisabled(True)
         self.actionBold_Line.toggled.connect(self.bold_toggle)
         self.actionRAW.triggered.connect(self.export_data_raw)
