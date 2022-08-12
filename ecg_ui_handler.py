@@ -59,7 +59,7 @@ def export_data_raw(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.start_capture_timer()
+    self.restart_capture_timer()
 
 def export_data_png(self):
     self.stop_capture_timer()
@@ -76,7 +76,7 @@ def export_data_png(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.start_capture_timer()
+    self.restart_capture_timer()
 
 def export_data_csv(self):
     self.stop_capture_timer()
@@ -95,4 +95,4 @@ def export_data_csv(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.start_capture_timer()
+    self.restart_capture_timer()
