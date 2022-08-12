@@ -12,35 +12,64 @@ def com_refresh(self):
         d_name = device.device + ": " + device.description
         self.port_combo_box.addItem(d_name)
 
+# checks to see if we can communicate with the Arduino
+# returns True if device is responding, False if not.
+def com_check_device(self):
+    self.statusBar.showMessage('Connecting...')
+    max_attempts = 10
+    device_ok = False
+    while(max_attempts > 0 and device_ok == False):
+        self.ser.write('\n'.encode())
+        self.ser.flush()
+        while(self.ser.inWaiting() > 0):
+            c = str(self.ser.read().decode())
+            if c == '$':
+                device_ok = True
+                break    
+        max_attempts -= 1
+        time.sleep(0.2)
+    return device_ok
+
+def connection_error_msg(self):
+    error_message = QtWidgets.QMessageBox()
+    error_message.setWindowTitle("Device Error")
+    error_message.setText("Connected device is not responding.\n\nThis may be the incorrect device. Please choose\na different device in the menu and try again.")
+    error_message.exec_()
+    self.reset()
+    self.com_connect()
+
 # connect to device
 def com_connect(self):
     self.run = True
     self.button_run.setText("Stop")
     if(self.ser == None):
         try:
-            self.statusBar.showMessage("Connecting...")
             self.com_port = self.port_combo_box.currentText().split(':')[0]
             if(self.com_port == ''):
                 self.statusBar.showMessage('No device selected!')
                 return
             self.reset()
             self.ser = serial.Serial(self.com_port, 115200)
-            self.button_refresh.setDisabled(True)
-            self.button_connect.setText("Disconnect")
-            self.statusBar.showMessage("Connected to " + self.com_port)
-            time.sleep(3)
             self.ser.flushInput()
-            self.capture_timer.start(self.capture_rate_ms)
-            self.graph_timer.start(self.graph_timer_ms)
-            self.invert_modifier = 1
-            self.button_run.setDisabled(False)
-            self.set_message("CALIBRATING")
+            device_ok = self.com_check_device()
+            if(not device_ok):
+                self.connection_error_msg()
+                self.ser = None
+                return    
         except Exception as e:
             error_message = QtWidgets.QMessageBox()
             error_message.setWindowTitle("Connection Error")
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
+        self.button_refresh.setDisabled(True)
+        self.button_connect.setText("Disconnect")
+        self.statusBar.showMessage("Connected to " + self.com_port)
+        self.capture_timer.start(self.capture_rate_ms)
+        self.graph_timer.start(self.graph_timer_ms)
+        self.invert_modifier = 1
+        self.button_run.setDisabled(False)
+        self.set_message("CALIBRATING")
     else:
         self.button_run.setDisabled(True)
         self.capture_timer.stop()
@@ -57,7 +86,7 @@ def get_input(self):
     # send character to Arduino to trigger the Arduino to begin a analogRead capture
     try:
         self.ser.write('\n'.encode())
-        self.ser.flush()
+        #self.ser.flush()
     except Exception as e:
         self.ser == None
         self.com_connect()
@@ -85,12 +114,13 @@ def get_input(self):
 #        buf = buf.replace('\r', '')
 #        buf = buf[1:buf.find('\n')].strip('\n')     # start slice at 1 to drop '$' character
     buf = buf.strip('\n')
-    if len(buf) == 3:
-        self.current_reading = int(buf)
-        val = self.invert_modifier * self.current_reading
-        self.value_history[self.capture_index] = val
-        self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
-        self.capture_index = (self.capture_index + 1) % self.value_history_max 
+    if len(buf) != 3:
+        return
+    self.current_reading = int(buf)
+    val = self.invert_modifier * self.current_reading
+    self.value_history[self.capture_index] = val
+    self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
+    self.capture_index = (self.capture_index + 1) % self.value_history_max 
     
     # Perform calibration. Capture data as normal until self.calibrating counter is zero.
     # If the peak value is below the mean, invert the signal.
@@ -130,10 +160,7 @@ def get_input(self):
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
         if(max_delta == 0 and min_delta == 0):
-            error_message = QtWidgets.QMessageBox()
-            error_message.setWindowTitle("Device Error")
-            error_message.setText("Connected device is not responding.\n\nThis may be the incorrect device. Please choose\na different device in the menu and try again.")
-            error_message.exec_()
+            self.connection_error_msg()
             self.reset()
             self.com_connect()
 
