@@ -29,12 +29,12 @@ def run_toggle(self):
             self.run = False
             self.statusBar.showMessage('Capture stopped')  
             self.button_run.setText("Run")
-            self.capture_timer.stop()
+            self.stop_capture_timer()
         else:
             self.run = True
             self.statusBar.showMessage('Capture running') 
             self.button_run.setText("Stop")
-            self.capture_timer.start(self.capture_rate_ms)
+            self.start_capture_timer()
 
 def show_about(self):
     self.about_window.show()

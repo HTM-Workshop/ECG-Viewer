@@ -51,8 +51,10 @@ def com_connect(self):
         self.button_connect.setText("Connect")
         self.statusBar.showMessage('No device connected')   
         
-# Send a value to the Arduino to trigger it to do a measurement
+# Fetch a value from the Arduino
 def get_input(self):
+
+    # send character to Arduino to trigger the Arduino to begin a analogRead capture
     try:
         self.ser.write('\n'.encode())
         self.ser.flush()
@@ -65,40 +67,31 @@ def get_input(self):
         msg.setWindowTitle("Connection Error")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
+
+    # get response from Arduino, terminated by newline character
     buf = ''
+    while(self.ser.inWaiting() > 0):
+        c = str(self.ser.read().decode())
+        if c == '$':
+            break
     while(self.ser.inWaiting() > 0):
         c = str(self.ser.read().decode())
         buf = buf + c
         if c == '\n':
             break
-    if buf == '':
-        return
 
-    try:
-        if buf[0] != '$':
-            return
-        # buf = buf.strip('a')
-        # buf = buf.strip('\n')
-        # buf = buf.replace('\r', '')
-        # buf = buf.split('\n')[0]
-        buf = buf.replace('\r', '')
-        buf = buf[1:buf.find('\n')].strip('\n')     # start slice at 1 to drop '$' character
-        if buf == '' or len(buf) != 3:
-            return
-        # for c in buf:
-        #     print(str(hex(ord(c))) + ' ', end = '')
-        # print('\n')
-
-        self.current_reading = float(buf)
-        #assert(self.invert_modifier == 1 or self.invert_modifier == -1)
+    # parse the input from the Arduino.
+#        buf = buf[buf.find('$'):]
+#        buf = buf.replace('\r', '')
+#        buf = buf[1:buf.find('\n')].strip('\n')     # start slice at 1 to drop '$' character
+    buf = buf.strip('\n')
+    if len(buf) == 3:
+        self.current_reading = int(buf)
         val = self.invert_modifier * self.current_reading
         self.value_history[self.capture_index] = val
-        #self.value_history_timed[self.capture_index] = [val, self.capture_timer_qt.elapsed()]
         self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
         self.capture_index = (self.capture_index + 1) % self.value_history_max 
-    except:
-        pass        # measurement info send from Arduino was invalid, ignore it 
-        
+    
     # Perform calibration. Capture data as normal until self.calibrating counter is zero.
     # If the peak value is below the mean, invert the signal.
     if(self.calibrating > 0):
@@ -146,12 +139,14 @@ def get_input(self):
 
 def stop_capture_timer(self):
     if(self.capture_timer.isActive()):
+        self.stop_graph_timer()
         self.capture_timer.stop()
 
 def start_capture_timer(self):
     self.ser.reset_input_buffer()
     if(not self.capture_timer.isActive()):
         self.capture_timer.start(self.capture_rate_ms)
+        self.start_graph_timer()
 
 def restart_capture_timer(self):
     self.ser.reset_input_buffer()
