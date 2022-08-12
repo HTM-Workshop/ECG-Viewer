@@ -19,13 +19,17 @@ def com_check_device(self):
     max_attempts = 10
     device_ok = False
     while(max_attempts > 0 and device_ok == False):
-        self.ser.write('\n'.encode())
-        self.ser.flush()
-        while(self.ser.inWaiting() > 0):
-            c = str(self.ser.read().decode())
-            if c == '$':
-                device_ok = True
-                break    
+        try:
+            self.ser.write('\n'.encode())
+            self.ser.flush()
+            while(self.ser.inWaiting() > 0):
+                c = str(self.ser.read().decode())
+                if c == '$':
+                    device_ok = True
+                    break    
+        except Exception as e:
+            print(e)
+            time.sleep(1)
         max_attempts -= 1
         time.sleep(0.2)
     return device_ok
