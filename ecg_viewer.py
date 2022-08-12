@@ -83,7 +83,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.show_track.stateChanged.connect(self.reset)
         self.button_run.setDisabled(True)
         self.actionBold_Line.toggled.connect(self.bold_toggle)
-        self.FPSGroup.triggered.connect(self.restart_graph_timer)
         self.actionRAW.triggered.connect(self.export_data_raw)
         self.actionPNG.triggered.connect(self.export_data_png)
         self.actionCSV.triggered.connect(self.export_data_csv)
@@ -141,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, stop_capture_timer, restart_capture_timer
-    from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer
+    from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, stop_graph_timer, start_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
         run_toggle, export_data_raw, export_data_png, export_data_csv, show_about
