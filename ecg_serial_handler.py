@@ -10,7 +10,7 @@ def com_refresh(self):
     available_ports = serial.tools.list_ports.comports()
     for device in available_ports:
         d_name = device.device + ": " + device.description
-        self.port_combo_box.addItem(d_name)
+        self.port_combo_box.addItem(d_name, device.device)
 
 # checks to see if we can communicate with the Arduino
 # returns True if device is responding, False if not.
@@ -48,12 +48,14 @@ def com_connect(self):
     self.button_run.setText("Stop")
     if(self.ser == None):
         try:
-            self.com_port = self.port_combo_box.currentText().split(':')[0]
-            if(self.com_port == ''):
+            #self.com_port = self.port_combo_box.currentText().split(':')[0]
+            current_index = self.port_combo_box.currentIndex()
+            com_port = self.port_combo_box.itemData(current_index)            
+            if(com_port == ''):
                 self.statusBar.showMessage('No device selected!')
                 return
             self.reset()
-            self.ser = serial.Serial(self.com_port, 115200)
+            self.ser = serial.Serial(com_port, 115200)
             self.ser.flushInput()
             device_ok = self.com_check_device()
             if(not device_ok):
@@ -68,7 +70,7 @@ def com_connect(self):
             print(e)
         self.button_refresh.setDisabled(True)
         self.button_connect.setText("Disconnect")
-        self.statusBar.showMessage("Connected to " + self.com_port)
+        self.statusBar.showMessage("Connected to " + com_port)
         self.capture_timer.start(self.capture_rate_ms)
         self.graph_timer.start(self.graph_timer_ms)
         self.invert_modifier = 1
