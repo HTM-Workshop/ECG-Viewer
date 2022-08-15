@@ -48,6 +48,7 @@ def show_about(self):
 # ISSUE: These export options fail on MacOS when compiled to a .apps 
 # exports data stored in self.value_history to a binary file 
 def export_data_raw(self):
+    capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.bin'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
@@ -65,9 +66,11 @@ def export_data_raw(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.restart_capture_timer()
+    if(capture_running):
+        self.start_capture_timer()
 
 def export_data_png(self):
+    capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.png'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
@@ -82,9 +85,11 @@ def export_data_png(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.restart_capture_timer()
+    if(capture_running):
+        self.start_capture_timer()
 
 def export_data_csv(self):
+    capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.csv'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
@@ -101,4 +106,5 @@ def export_data_csv(self):
             error_message.setText(str(e))
             error_message.exec_()
             print(e)
-    self.restart_capture_timer()
+    if(capture_running):
+        self.start_capture_timer()

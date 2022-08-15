@@ -1,5 +1,3 @@
-from distutils.log import debug
-from typing import Type
 import serial.tools.list_ports
 import serial, time, numpy
 from PyQt5 import QtWidgets, uic, QtCore
@@ -52,7 +50,7 @@ def com_connect(self):
         self.statusBar.showMessage('No device selected!')
         return False
     except TypeError as e:
-        self.display_error_message("Invalid port type", e)
+        self.display_error_message("Invalid port type", str(e))
         print(e)
         return False
     
@@ -60,8 +58,8 @@ def com_connect(self):
     try:
         self.ser.port = com_port
         self.ser.open()
-    except serial.Serial.SerialException as e:
-        self.display_error_message("Connection Failure", e)
+    except serial.serialutil.SerialException as e:
+        self.display_error_message("Connection Failure", str(e))
         return False
 
     # detect if device is responding properly
@@ -71,96 +69,56 @@ def com_connect(self):
         return False
     
     # device is connected and test has passed
-    return True
-
-# connect to device
-# def com_connect(self):
-#     self.run = True
-#     self.button_run.setText("Stop")
-#     if(self.ser == None):
-#         try:
-#             #self.com_port = self.port_combo_box.currentText().split(':')[0]
-#             current_index = self.port_combo_box.currentIndex()
-#             com_port = self.port_combo_box.itemData(current_index)            
-#             if(com_port == ''):
-#                 self.statusBar.showMessage('No device selected!')
-#                 return
-#             self.reset()
-#             self.ser = serial.Serial(com_port, 115200)
-#             self.ser.flushInput()
-#             device_ok = self.com_check_device()
-#             if(not device_ok):
-#                 self.connection_error_msg()
-#                 self.ser = None
-#                 return    
-#         except Exception as e:
-#             error_message = QtWidgets.QMessageBox()
-#             error_message.setWindowTitle("Connection Error")
-#             error_message.setText(str(e))
-#             error_message.exec_()
-#             print(e)
-#         self.button_refresh.setDisabled(True)
-#         self.button_connect.setText("Disconnect")
-#         self.statusBar.showMessage("Connected to " + com_port)
-#         self.capture_timer.start(self.capture_rate_ms)
-#         self.graph_timer.start(self.graph_timer_ms)
-#         self.invert_modifier = 1
-#         self.button_run.setDisabled(False)
-#         self.set_message("CALIBRATING")
-#     else:
-#         self.button_run.setDisabled(True)
-#         self.capture_timer.stop()
-#         self.graph_timer.stop()
-#         self.ser.close()
-#         self.ser = None
-#         self.button_refresh.setDisabled(False)
-#         self.button_connect.setText("Connect")
-#         self.statusBar.showMessage('No device connected')   
+    print("Connection to {} succesful.".format(com_port))
+    return True  
         
 # Fetch a value from the Arduino
-def get_input(self):
+def get_input(self) -> None:
+    """Fetches a measurement from the Arduino, stores value in value_history and time_history"""
 
     # send character to Arduino to trigger the Arduino to begin a analogRead capture
     try:
         self.ser.write('\n'.encode())
-        #self.ser.flush()
     except Exception as e:
         self.ser == None
-        self.com_connect()
+        self.connect_toggle()
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setText("Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n" + str(e))
         msg.setWindowTitle("Connection Error")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
+        return
 
     # get response from Arduino, terminated by newline character
     buf = ''
+
+    # read and discard incoming bytes until the start character is found
     while(self.ser.inWaiting() > 0):
         c = str(self.ser.read().decode())
         if c == '$':
             break
+
+    # read characters until newline is detected, this is faster than serial's read_until
     while(self.ser.inWaiting() > 0):
         c = str(self.ser.read().decode())
-        buf = buf + c
         if c == '\n':
             break
+        buf = buf + c
 
-    # parse the input from the Arduino.
-#        buf = buf[buf.find('$'):]
-#        buf = buf.replace('\r', '')
-#        buf = buf[1:buf.find('\n')].strip('\n')     # start slice at 1 to drop '$' character
-    buf = buf.strip('\n')
+    # all measurements are exactly three characters in size
     if len(buf) != 3:
-        return
+        return False
     self.current_reading = int(buf)
     val = self.invert_modifier * self.current_reading
     self.value_history[self.capture_index] = val
     self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
     self.capture_index = (self.capture_index + 1) % self.value_history_max 
-    
-    # Perform calibration. Capture data as normal until self.calibrating counter is zero.
-    # If the peak value is below the mean, invert the signal.
+    return True
+
+def do_calibrate(self):    
+    """ Perform calibration. Capture data as normal until self.calibrating counter is zero.
+     If the peak value is below the mean, invert the signal. """
     if(self.calibrating > 0):
         self.calibrating = self.calibrating - 1
     elif(self.calibrating == 0):
@@ -196,10 +154,6 @@ def get_input(self):
         else:
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
-        if(max_delta == 0 and min_delta == 0):
-            self.connection_error_msg()
-            self.reset()
-            self.com_connect()
 
 def stop_capture_timer(self):
     if(self.capture_timer.isActive()):
