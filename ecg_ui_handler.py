@@ -30,17 +30,15 @@ def display_error_message(self, title: str, msg: str) -> None:
 
 # toggle capture on or off
 def run_toggle(self):
-    if(self.ser != None):
-        if(self.run == True):
-            self.run = False
-            self.statusBar.showMessage('Capture stopped')  
-            self.button_run.setText("Run")
-            self.stop_capture_timer()
-        else:
-            self.run = True
-            self.statusBar.showMessage('Capture running') 
-            self.button_run.setText("Stop")
-            self.start_capture_timer()
+    assert self.ser.isOpen()
+    if(self.capture_timer.isActive()):
+        self.statusBar.showMessage('Capture stopped')  
+        self.button_run.setText("Run")
+        self.stop_capture_timer()
+    else:
+        self.statusBar.showMessage('Capture running') 
+        self.button_run.setText("Stop")
+        self.start_capture_timer()
 
 def show_about(self):
     self.about_window.show()
