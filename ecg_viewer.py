@@ -139,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
-        stop_capture_timer, restart_capture_timer, com_check_device
+        stop_capture_timer, restart_capture_timer, com_check_device, do_calibrate
     from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, stop_graph_timer, start_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
@@ -147,8 +147,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     # main update loop
     def do_update(self):
-        self.get_input()
-        if(self.capture_index == 0 and self.calibrating == -1):
+        """Main update loop for ECG Reader. Called via timer"""
+
+        reading_ok = self.get_input()
+
+        # Run the calibration routine. self.calibrating is a timer that runs until its value is -1
+        if(self.calibrating > -1 and reading_ok):
+            self.do_calibrate()     # only add reading to calibration if it was valid
+
+        # if we've reached a full sample period, self.capture_index will roll-over back
+        # to zero. When this happens, fit the graph and update the heart rate
+        if(self.capture_index == 0 and reading_ok):
             self.ser.reset_input_buffer()
             self.graph_fit()
             self.update_hr()
@@ -179,6 +188,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.button_refresh.setDisabled(False)
             self.button_run.setDisabled(True)
             self.button_connect.setText("Connect")
+            self.com_refresh()
 
 @debug_timer
 def check_resolution(app):
