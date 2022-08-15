@@ -1,4 +1,3 @@
-from email.policy import default
 from PyQt5 import QtWidgets, uic, QtCore
 import pyqtgraph.exporters
 import time, csv
@@ -21,7 +20,14 @@ def clear_message(self):
 def force_invert(self):
     self.invert_modifier = self.invert_modifier * -1
     
+def display_error_message(self, title: str, msg: str) -> None:
+    """Display a generic error message to the user."""
+    error_message = QtWidgets.QMessageBox()
+    error_message.setWindowTitle(title)
+    error_message.setText(msg)
+    error_message.exec_()  
     
+
 # toggle capture on or off
 def run_toggle(self):
     if(self.ser != None):

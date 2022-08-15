@@ -26,6 +26,7 @@ from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 import statistics as stat
 import sys, os, math, serial, time, platform, numpy
+from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
 import images_qr
@@ -54,7 +55,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph.disableAutoRange()    
         self.setWindowTitle("DIYECG Viewer - " + VERSION)
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
-        
+
         # Capture timer
         self.capture_timer = QtCore.QTimer()
         self.capture_timer.timeout.connect(self.do_update)
@@ -75,7 +76,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # Connect buttons to methods
         self.button_refresh.clicked.connect(self.com_refresh)
-        self.button_connect.clicked.connect(self.com_connect)  
+        self.button_connect.clicked.connect(self.connect_toggle)  
         self.button_reset.clicked.connect(self.reset)
         self.button_run.clicked.connect(self.run_toggle)
         self.button_force_invert.clicked.connect(self.force_invert)
@@ -105,11 +106,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionBold_Line.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
         
         # Serial Variables
-        self.ser = None
+        self.ser: serial.Serial = serial.Serial(baudrate = 115200)
 
-        # perform initial com port check
-        self.com_refresh()  
-        
         # data variables
         self.current_reading = 0
         self.value_history_max = 5000
@@ -137,14 +135,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # perform initial reset
         self.reset()
+        self.com_refresh() 
 
     # import class methods
     from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
-        stop_capture_timer, restart_capture_timer, com_check_device, connection_error_msg
+        stop_capture_timer, restart_capture_timer, com_check_device
     from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, stop_graph_timer, start_graph_timer
     from ecg_math import detect_peaks, update_hr
     from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
-        run_toggle, export_data_raw, export_data_png, export_data_csv, show_about
+        run_toggle, export_data_raw, export_data_png, export_data_csv, show_about, display_error_message
     
     # main update loop
     def do_update(self):
@@ -164,10 +163,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.calibrating = self.value_history_max + 1
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
+    
+    def connect_toggle(self) -> None:
+        if not self.ser.isOpen():
+            if self.com_connect():
+                self.button_refresh.setDisabled(True)
+                self.button_run.setDisabled(False)
+                self.button_connect.setText("Disconnect")
+                self.invert_modifier = 1
+                self.reset()
+                self.start_capture_timer()
+        else:
+            self.stop_capture_timer()
+            self.ser.close()
+            self.button_refresh.setDisabled(False)
+            self.button_run.setDisabled(True)
+            self.button_connect.setText("Connect")
 
-    def debug(self):
-        print("DEBUG")
-
+@debug_timer
 def check_resolution(app):
     screen = app.primaryScreen().size()
     size_string = str(screen.width()) + " x " + str(screen.height())
