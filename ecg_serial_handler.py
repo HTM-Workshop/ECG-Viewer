@@ -1,10 +1,14 @@
+from distutils.log import debug
+from typing import Type
 import serial.tools.list_ports
 import serial, time, numpy
 from PyQt5 import QtWidgets, uic, QtCore
 import statistics as stat
+from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 
 # refresh available devices, store in dropdown menu storage    
+@debug_timer
 def com_refresh(self):
     self.port_combo_box.clear()
     available_ports = serial.tools.list_ports.comports()
@@ -14,6 +18,7 @@ def com_refresh(self):
 
 # checks to see if we can communicate with the Arduino
 # returns True if device is responding, False if not.
+@debug_timer
 def com_check_device(self):
     self.statusBar.showMessage('Connecting...')
     max_attempts = 10
@@ -34,57 +39,83 @@ def com_check_device(self):
         time.sleep(0.2)
     return device_ok
 
-def connection_error_msg(self):
-    error_message = QtWidgets.QMessageBox()
-    error_message.setWindowTitle("Device Error")
-    error_message.setText("Connected device is not responding.\n\nThis may be the incorrect device. Please choose\na different device in the menu and try again.")
-    error_message.exec_()
-    self.reset()
-    self.com_connect()
+@debug_timer
+def com_connect(self):
+    """Connect/Disconnect from a serial device."""
+    # fetch port name from dropdown menu
+    try:
+        current_index = self.port_combo_box.currentIndex()
+        com_port = self.port_combo_box.itemData(current_index) 
+        if not com_port:
+            raise ValueError("No port selected.")
+    except ValueError:
+        self.statusBar.showMessage('No device selected!')
+        return False
+    except TypeError as e:
+        self.display_error_message("Invalid port type", e)
+        print(e)
+        return False
+    
+    # connect to port 
+    try:
+        self.ser.port = com_port
+        self.ser.open()
+    except serial.Serial.SerialException as e:
+        self.display_error_message("Connection Failure", e)
+        return False
+
+    # detect if device is responding properly
+    if not self.com_check_device():
+        self.display_error_message("Device Error", """Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.""")
+        self.ser.close()
+        return False
+    
+    # device is connected and test has passed
+    return True
 
 # connect to device
-def com_connect(self):
-    self.run = True
-    self.button_run.setText("Stop")
-    if(self.ser == None):
-        try:
-            #self.com_port = self.port_combo_box.currentText().split(':')[0]
-            current_index = self.port_combo_box.currentIndex()
-            com_port = self.port_combo_box.itemData(current_index)            
-            if(com_port == ''):
-                self.statusBar.showMessage('No device selected!')
-                return
-            self.reset()
-            self.ser = serial.Serial(com_port, 115200)
-            self.ser.flushInput()
-            device_ok = self.com_check_device()
-            if(not device_ok):
-                self.connection_error_msg()
-                self.ser = None
-                return    
-        except Exception as e:
-            error_message = QtWidgets.QMessageBox()
-            error_message.setWindowTitle("Connection Error")
-            error_message.setText(str(e))
-            error_message.exec_()
-            print(e)
-        self.button_refresh.setDisabled(True)
-        self.button_connect.setText("Disconnect")
-        self.statusBar.showMessage("Connected to " + com_port)
-        self.capture_timer.start(self.capture_rate_ms)
-        self.graph_timer.start(self.graph_timer_ms)
-        self.invert_modifier = 1
-        self.button_run.setDisabled(False)
-        self.set_message("CALIBRATING")
-    else:
-        self.button_run.setDisabled(True)
-        self.capture_timer.stop()
-        self.graph_timer.stop()
-        self.ser.close()
-        self.ser = None
-        self.button_refresh.setDisabled(False)
-        self.button_connect.setText("Connect")
-        self.statusBar.showMessage('No device connected')   
+# def com_connect(self):
+#     self.run = True
+#     self.button_run.setText("Stop")
+#     if(self.ser == None):
+#         try:
+#             #self.com_port = self.port_combo_box.currentText().split(':')[0]
+#             current_index = self.port_combo_box.currentIndex()
+#             com_port = self.port_combo_box.itemData(current_index)            
+#             if(com_port == ''):
+#                 self.statusBar.showMessage('No device selected!')
+#                 return
+#             self.reset()
+#             self.ser = serial.Serial(com_port, 115200)
+#             self.ser.flushInput()
+#             device_ok = self.com_check_device()
+#             if(not device_ok):
+#                 self.connection_error_msg()
+#                 self.ser = None
+#                 return    
+#         except Exception as e:
+#             error_message = QtWidgets.QMessageBox()
+#             error_message.setWindowTitle("Connection Error")
+#             error_message.setText(str(e))
+#             error_message.exec_()
+#             print(e)
+#         self.button_refresh.setDisabled(True)
+#         self.button_connect.setText("Disconnect")
+#         self.statusBar.showMessage("Connected to " + com_port)
+#         self.capture_timer.start(self.capture_rate_ms)
+#         self.graph_timer.start(self.graph_timer_ms)
+#         self.invert_modifier = 1
+#         self.button_run.setDisabled(False)
+#         self.set_message("CALIBRATING")
+#     else:
+#         self.button_run.setDisabled(True)
+#         self.capture_timer.stop()
+#         self.graph_timer.stop()
+#         self.ser.close()
+#         self.ser = None
+#         self.button_refresh.setDisabled(False)
+#         self.button_connect.setText("Connect")
+#         self.statusBar.showMessage('No device connected')   
         
 # Fetch a value from the Arduino
 def get_input(self):
