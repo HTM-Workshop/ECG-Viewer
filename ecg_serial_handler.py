@@ -73,7 +73,7 @@ def com_connect(self):
     return True  
         
 # Fetch a value from the Arduino
-def get_input(self) -> None:
+def get_input(self) -> bool:
     """Fetches a measurement from the Arduino, stores value in value_history and time_history"""
 
     # send character to Arduino to trigger the Arduino to begin a analogRead capture
