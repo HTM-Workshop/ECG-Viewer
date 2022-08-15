@@ -63,9 +63,6 @@ def graph_fit(self):
     low  = self.value_history.min()
     pad  = math.floor(((high) - (low)) * self.graph_padding_factor)
     sps = self.time_history[::-1][0] - self.time_history[0]
-    if(sps == 0):
-        return
-    print("PAD VALUE: " + str(pad))
     self.statusBar.showMessage("Samples per second: " + str(math.floor((self.value_history_max / sps) * 1000)))
     self.graph.setRange(
         xRange = (0, self.value_history_max),
