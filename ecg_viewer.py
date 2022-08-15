@@ -106,7 +106,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # Serial Variables
         self.ser = None
-        self.com_port = ''
 
         # perform initial com port check
         self.com_refresh()  
