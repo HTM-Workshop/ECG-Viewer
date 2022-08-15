@@ -129,22 +129,8 @@ def do_calibrate(self):
         temp_array.sort()
         period_mean = self.value_history[window:self.value_history_max - window].mean()
         min_delta = period_mean - stat.mean(temp_array[0:peak_samples])
-        print(temp_array[0:peak_samples])
         temp_array = temp_array[::-1]
         max_delta = stat.mean(temp_array[0:peak_samples]) - period_mean
-        print(temp_array[0:peak_samples])
-        
-        #min_delta = period_mean - min(self.value_history[50:self.value_history_max - 50])
-        #max_delta = max(self.value_history[50:self.value_history_max - 50]) - period_mean
-        print("DYNAMIC CALIBRATION INFO:")
-        print("RANGE     : " + str(window) + " - " + str(self.value_history_max - window))
-        print("PK SAMPLES: " + str(peak_samples))
-        print("AVG MAX   : " + str(self.value_history[window:self.value_history_max - window].max()))
-        print("AVG MIN   : " + str(self.value_history[window:self.value_history_max - window].min()))
-        print("MEAN      : " + str(period_mean))
-        print("MAX DELTA : " + str(max_delta))
-        print("MIN DELTA : " + str(min_delta))
-        print("CIDX      : " + str(self.capture_index))
         if(abs(max_delta - min_delta) > 1.5):
             if(self.autoinvert_checkbox.isChecked()):
                 if(min_delta > max_delta):
@@ -154,6 +140,13 @@ def do_calibrate(self):
         else:
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
+        print("DYNAMIC CALIBRATION INFO:")
+        print("RANGE     : {} - {}".format(window, (window, self.value_history_max - window)))
+        print("PK SAMPLES: {}".format(peak_samples))
+        print("MEAN      : {}".format(period_mean))
+        print("MAX DELTA : {}".format(max_delta))
+        print("MIN DELTA : {}".format(min_delta))
+        print("CIDX      : {}".format(self.capture_index))
 
 def stop_capture_timer(self):
     if(self.capture_timer.isActive()):
