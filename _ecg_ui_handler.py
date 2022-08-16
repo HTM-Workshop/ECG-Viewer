@@ -1,4 +1,23 @@
 #!/usr/bin/python3
+#
+#            ECG Viewer
+#   Written by Kevin Williams - 2022
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+
 import csv
 import time
 import pyqtgraph.exporters
@@ -23,6 +42,7 @@ def clear_message(self):
 def force_invert(self):
     self.invert_modifier = self.invert_modifier * -1
     
+
 def display_error_message(self, title: str, msg: str) -> None:
     """Display a generic error message to the user."""
     error_message = QtWidgets.QMessageBox()
@@ -33,7 +53,7 @@ def display_error_message(self, title: str, msg: str) -> None:
 
 # toggle capture on or off
 def run_toggle(self):
-    """Toggles the capture process on or off. Should be called by a single run/stop function"""
+    """Toggles the capture process on or off. Should be called by a single run/stop function."""
     assert self.ser.isOpen()
     if(self.capture_timer.isActive()):
         self.statusBar.showMessage('Capture stopped')  
@@ -44,12 +64,19 @@ def run_toggle(self):
         self.button_run.setText("Stop")
         self.start_capture_timer()
 
+
 def show_about(self):
+    """Shows the About dialog window."""
     self.about_window.show()
 
-# ISSUE: These export options fail on MacOS when compiled to a .apps 
-# exports data stored in self.value_history to a binary file 
+
 def export_data_raw(self):
+    """
+    Exports a RAW binary data file of the currently recorded information, pre-filtered.\n
+    Pauses capture (if running) and shows a file save dialog.\n
+    Resumes capture if itw as running after file is saved or user cancels save..
+    """
+
     capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.bin'
@@ -71,7 +98,14 @@ def export_data_raw(self):
     if(capture_running):
         self.start_capture_timer()
 
+
 def export_data_png(self):
+    """
+    Exports a PNG image file of the currently displayed information.\n
+    Pauses capture (if running) and shows a file save dialog.\n
+    Resumes capture if itw as running after file is saved or user cancels save..
+    """
+
     capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.png'
@@ -90,7 +124,14 @@ def export_data_png(self):
     if(capture_running):
         self.start_capture_timer()
 
+
 def export_data_csv(self):
+    """
+    Exports a CSV file of the currently recorded information, pre-filtered.\n
+    Pauses capture (if running) and shows a file save dialog.\n
+    Resumes capture if itw as running after file is saved or user cancels save..
+    """
+
     capture_running = self.capture_timer.isActive()
     self.stop_capture_timer()
     default_filename = str(time.time()).split('.')[0] + '.csv'

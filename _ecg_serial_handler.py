@@ -1,4 +1,23 @@
 #!/usr/bin/python3
+#
+#            ECG Viewer
+#   Written by Kevin Williams - 2022
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+
 import time 
 import numpy
 import serial
@@ -10,16 +29,25 @@ from ecg_viewer_window import Ui_MainWindow
 
 # refresh available devices, store in dropdown menu storage    
 def com_refresh(self):
+    """
+    Refreshes the list of available serial devices.\n
+    Results are stored in the dropdown menu.\n
+    Uses addItem to store the device string."""
     self.port_combo_box.clear()
     available_ports = serial.tools.list_ports.comports()
     for device in available_ports:
         d_name = device.device + ": " + device.description
         self.port_combo_box.addItem(d_name, device.device)
 
-# checks to see if we can communicate with the Arduino
-# returns True if device is responding, False if not.
+
 @debug_timer
 def com_check_device(self):
+    """
+    Checks to see if the Arduino is responding the way we expect.\n
+    Returns True if device is responding properly.\n
+    Returns False if device is not responding or is giving improper responses.
+    """
+
     self.statusBar.showMessage('Connecting...')
     max_attempts = 10
     device_ok = False
@@ -39,9 +67,15 @@ def com_check_device(self):
         time.sleep(0.2)
     return device_ok
 
+
 @debug_timer
 def com_connect(self):
-    """Connect/Disconnect from a serial device."""
+    """
+    Connect/Disconnect from the serial device selected in the devices dropdown menu.\n
+    Returns True if the connection was sucessful.\n
+    False if the connection was unsucessful.
+    """
+
     # fetch port name from dropdown menu
     try:
         current_index = self.port_combo_box.currentIndex()
@@ -73,11 +107,11 @@ def com_connect(self):
     # device is connected and test has passed
     print("Connection to {} succesful.".format(com_port))
     return True  
+
         
 # Fetch a value from the Arduino
 def get_input(self) -> bool:
-    """Fetches a measurement from the Arduino, stores value in value_history and time_history
-    
+    """Fetches a measurement from the Arduino, stores value in value_history and time_history.\n
     Returns True if reading was valid. 
     Returns False if reading was invalid or unsucessful.
     """
@@ -86,14 +120,11 @@ def get_input(self) -> bool:
     try:
         self.ser.write('\n'.encode())
     except Exception as e:
-        self.ser == None
+        print(e)
+        print(self.ser.isOpen())
         self.connect_toggle()
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Warning)
-        msg.setText("Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n" + str(e))
-        msg.setWindowTitle("Connection Error")
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        msg.exec_()
+        err_msg = "Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{}".format(e)
+        self.display_error_message("Connection Error", err_msg)
         return False
 
     # get response from Arduino, terminated by newline character
@@ -123,8 +154,11 @@ def get_input(self) -> bool:
     return True
 
 def do_calibrate(self):    
-    """ Perform calibration. Capture data as normal until self.calibrating counter is zero.
-     If the peak value is below the mean, invert the signal. """
+    """ 
+    Perform calibration. Capture data as normal until self.calibrating counter is zero.\n
+    If the peak value is below the mean, invert the signal. 
+    """
+
     if(self.calibrating > 0):
         self.calibrating = self.calibrating - 1
     elif(self.calibrating == 0):
@@ -155,20 +189,16 @@ def do_calibrate(self):
         print("CIDX      : {}".format(self.capture_index))
 
 def stop_capture_timer(self):
+    """Stops the capture timer AND graph update timer."""
     if(self.capture_timer.isActive()):
         self.stop_graph_timer()
         self.capture_timer.stop()
 
 def start_capture_timer(self):
+    """Starts the capture timer AND graph update timer."""
     self.ser.reset_input_buffer()
     if(not self.capture_timer.isActive()):
         self.capture_timer.start(self.capture_rate_ms)
         self.start_graph_timer()
 
-def restart_capture_timer(self):
-    self.ser.reset_input_buffer()
-    self.capture_rate_ms = self.CaptureRateGroup.checkedAction().data()
-    if(self.capture_timer.isActive()):
-        self.capture_timer.stop()
-        self.capture_timer.start(self.capture_rate_ms)
 
