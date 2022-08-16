@@ -1,6 +1,8 @@
-from PyQt5 import QtWidgets, uic, QtCore
+import csv
+import time
 import pyqtgraph.exporters
-import time, csv
+from PyQt5 import QtWidgets, uic, QtCore
+
 
 # message box methods
 def alarm_on(self, text):

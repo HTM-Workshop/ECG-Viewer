@@ -1,9 +1,11 @@
+import math
+import numpy
+import statistics as stat
 import pyqtgraph as pg
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
-import statistics as stat
 from scipy.signal import savgol_filter
 from ecg_viewer_window import Ui_MainWindow
-import math, numpy
+
 
 
 # Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so

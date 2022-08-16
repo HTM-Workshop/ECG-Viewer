@@ -1,4 +1,5 @@
 from typing import Callable
+
 def debug_timer(func: Callable) -> Callable:
     """Debug timer decorator. Outputs to console."""
     def timer(*args):
