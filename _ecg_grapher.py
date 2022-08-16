@@ -25,49 +25,48 @@ from PyQt5 import QtCore
 from scipy.signal import savgol_filter
 
 
+def draw_graph(self) -> None:
+    """
+    Draws the data stored in self.value_history to the pyqtgraph window.\n
+    Pulls the status of the 'Show Signal Tracking' checkbox.\n
+    If the checkbox is checked, it draws the raw, unfiltered waveform with tracking information.\n
+    If the checkbox is not checked, it draws the savgol-filtered data.
+    """
 
-# Clear and refresh graph. pyqtgraph works a lot like a frame buffer, so
-# the graph must be cleared before it's redrawn.
-def draw_graph(self):
-    try:
-        fdat = savgol_filter(
-            self.value_history,
-            window_length = self.window_length_box.value(),
-            polyorder = self.polyorder_box.value(),
-            mode = 'interp',
-            )[25:self.value_history_max - 25]
-    except Exception as e:
-        self.window_length_box.setValue(199)
-        self.polyorder_box.setValue(7)
-        print(e)
-    self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
+    # display the filtered graph
+    if not self.show_track.isChecked():
+        try:
+            fdat = savgol_filter(
+                self.value_history,
+                window_length = self.window_length_box.value(),
+                polyorder = self.polyorder_box.value(),
+                mode = 'interp',
+                )[25:self.value_history_max - 25]
+        except ValueError as e:
+            self.window_length_box.setValue(199)
+            self.polyorder_box.setValue(7)
+            print(e)
+            return
+        self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
 
-    # Visually shows signal tracking information. VERY SLOW IF ENABLED
-    if self.show_track.isChecked():
+    # Otherwise, display raw waveform with tracking information. VERY SLOW IF ENABLED
+    else:
         mean = self.value_history.mean()
         center = self.detect_peaks()
         self.graph.clear()
-        self.graph.plot(numpy.arange(self.value_history.size), self.value_history, skipFiniteCheck = True)
+        self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = self.yellow_pen)
         self.graph.addItem(center_line)
         mean_line = pg.InfiniteLine(pos = mean, angle = 0, movable = False, pen = self.red_pen)
         self.graph.addItem(mean_line)
 
-        # select datapoints to graph depending on if the capture is actively running or not
-        if self.run:
-            sel_peaks = self.peaks[::-1][0:2]
-            sel_hold  = self.peaks[::-1][1:2]
-        else:
-            sel_peaks = self.peaks[::-1]
-            sel_hold  = self.peaks[::-1]
-
         # display a vertical line intersecting each detected peak
-        for p in sel_peaks:
+        for p in self.peaks:
             l = pg.InfiniteLine(pos = p, angle = 90, movable = False)
             self.graph.addItem(l)
 
         # display holdoff
-        for p in sel_hold:
+        for p in self.peaks:
             l = pg.InfiniteLine(pos = p + self.holdoff_box.value(), angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
             self.graph.addItem(l)
 
