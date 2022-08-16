@@ -7,12 +7,12 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -41,26 +41,26 @@ def clear_message(self):
     self.alarm_text.setText("")
 def force_invert(self):
     self.invert_modifier = self.invert_modifier * -1
-    
+
 
 def display_error_message(self, title: str, msg: str) -> None:
     """Display a generic error message to the user."""
     error_message = QtWidgets.QMessageBox()
     error_message.setWindowTitle(title)
     error_message.setText(msg)
-    error_message.exec_()  
-    
+    error_message.exec_()
+
 
 # toggle capture on or off
 def run_toggle(self):
     """Toggles the capture process on or off. Should be called by a single run/stop function."""
     assert self.ser.isOpen()
     if(self.capture_timer.isActive()):
-        self.statusBar.showMessage('Capture stopped')  
+        self.statusBar.showMessage('Capture stopped')
         self.button_run.setText("Run")
         self.stop_capture_timer()
     else:
-        self.statusBar.showMessage('Capture running') 
+        self.statusBar.showMessage('Capture running')
         self.button_run.setText("Stop")
         self.start_capture_timer()
 
@@ -85,7 +85,7 @@ def export_data_raw(self):
         try:
             f = open(filename, 'wb')
             data = [int(abs(x)).to_bytes(2, 'little') for x in self.value_history]
-            data = b''.join(data) 
+            data = b''.join(data)
             f.write(data)
             f.flush()
             f.close()
@@ -142,7 +142,7 @@ def export_data_csv(self):
             writer = csv.writer(csv_file)
             writer.writerow(self.value_history)
             csv_file.flush()
-            csv_file.close()      
+            csv_file.close()
         except Exception as e:
             error_message = QtWidgets.QMessageBox()
             error_message.setWindowTitle("Export Error")
