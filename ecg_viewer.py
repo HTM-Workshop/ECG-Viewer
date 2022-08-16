@@ -25,6 +25,8 @@ import platform
 import serial
 import numpy
 import pyqtgraph as pg
+from webbrowser import Error as wb_error
+from webbrowser import open as wb_open
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 # manual includes to fix occasional compile problem
@@ -37,7 +39,7 @@ from pyqtgraph.console.template_pyqt5 import *
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
-import images_qr
+import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
@@ -113,6 +115,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionPNG.triggered.connect(self.export_data_png)
         self.actionCSV.triggered.connect(self.export_data_csv)
         self.actionAbout.triggered.connect(self.show_about)
+        self.actionGet_Source_Code.triggered.connect(self.open_source_code_webpage)
         self.actionQuit.triggered.connect(sys.exit)
 
         # set tooltips
@@ -157,6 +160,16 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         # perform initial reset
         self.reset()
         self.com_refresh()
+
+    def open_source_code_webpage(self):
+        """
+        Opens a link to the project source code.
+        """
+        try:
+            wb_open("https://github.com/BB121-LAB/ecg_viewer", autoraise = True)
+        except wb_error as error:
+            error_msg = "Could not open URL.\n\n" + error
+            self.display_error_message("Open URL Error", error_msg)
 
 
     def do_update(self) -> None:
