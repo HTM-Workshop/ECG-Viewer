@@ -79,7 +79,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.about_window = AboutWindow()
         self.graph.disableAutoRange()
-        self.setWindowTitle("DIYECG Viewer - " + VERSION)
+        self.setWindowTitle("ECG Viewer - " + VERSION)
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
 
         # Capture timer
