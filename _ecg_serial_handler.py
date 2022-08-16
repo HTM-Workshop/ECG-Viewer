@@ -19,13 +19,10 @@
 #  MA 02110-1301, USA.
 
 import time
-import numpy
 import serial
 import serial.tools.list_ports
 import statistics as stat
-from PyQt5 import QtWidgets, uic, QtCore
 from debug import debug_timer
-from ecg_viewer_window import Ui_MainWindow
 
 # refresh available devices, store in dropdown menu storage
 def com_refresh(self):
@@ -41,7 +38,7 @@ def com_refresh(self):
 
 
 @debug_timer
-def com_check_device(self):
+def com_check_device(self) -> bool:
     """
     Checks to see if the Arduino is responding the way we expect.\n
     Returns True if device is responding properly.\n
@@ -51,11 +48,11 @@ def com_check_device(self):
     self.statusBar.showMessage('Connecting...')
     max_attempts = 10
     device_ok = False
-    while(max_attempts > 0 and device_ok == False):
+    while max_attempts > 0 and not device_ok:
         try:
             self.ser.write('\n'.encode())
             self.ser.flush()
-            while(self.ser.inWaiting() > 0):
+            while self.ser.inWaiting() > 0:
                 c = str(self.ser.read().decode())
                 if c == '$':
                     device_ok = True
@@ -69,7 +66,7 @@ def com_check_device(self):
 
 
 @debug_timer
-def com_connect(self):
+def com_connect(self) -> bool:
     """
     Connect/Disconnect from the serial device selected in the devices dropdown menu.\n
     Returns True if the connection was sucessful.\n
@@ -120,6 +117,7 @@ def get_input(self) -> bool:
     try:
         self.ser.write('\n'.encode())
     except Exception as e:
+        self.stop_capture_timer()
         print(e)
         print(self.ser.isOpen())
         self.connect_toggle()
@@ -131,17 +129,17 @@ def get_input(self) -> bool:
     buf = ''
 
     # read and discard incoming bytes until the start character is found
-    while(self.ser.inWaiting() > 0):
-        c = str(self.ser.read().decode())
-        if c == '$':
+    while self.ser.inWaiting() > 0:
+        chr = str(self.ser.read().decode())
+        if chr == '$':
             break
 
     # read characters until newline is detected, this is faster than serial's read_until
-    while(self.ser.inWaiting() > 0):
-        c = str(self.ser.read().decode())
-        if c == '\n':
+    while self.ser.inWaiting() > 0:
+        chr = str(self.ser.read().decode())
+        if chr == '\n':
             break
-        buf = buf + c
+        buf = buf + chr
 
     # all measurements are exactly three characters in size
     if len(buf) != 3:
@@ -153,15 +151,15 @@ def get_input(self) -> bool:
     self.capture_index = (self.capture_index + 1) % self.value_history_max
     return True
 
-def do_calibrate(self):
+def do_calibrate(self) -> None:
     """
     Perform calibration. Capture data as normal until self.calibrating counter is zero.\n
     If the peak value is below the mean, invert the signal.
     """
 
-    if(self.calibrating > 0):
+    if self.calibrating > 0:
         self.calibrating = self.calibrating - 1
-    elif(self.calibrating == 0):
+    elif self.calibrating == 0:
         self.clear_message()
         window = 150
         peak_samples = 3
@@ -171,9 +169,9 @@ def do_calibrate(self):
         min_delta = period_mean - stat.mean(temp_array[0:peak_samples])
         temp_array = temp_array[::-1]
         max_delta = stat.mean(temp_array[0:peak_samples]) - period_mean
-        if(abs(max_delta - min_delta) > 1.5):
-            if(self.autoinvert_checkbox.isChecked()):
-                if(min_delta > max_delta):
+        if abs(max_delta - min_delta) > 1.5:
+            if self.autoinvert_checkbox.isChecked():
+                if min_delta > max_delta:
                     self.invert_modifier = self.invert_modifier * -1
                     self.statusBar.showMessage('Inverting input signal')
                     print("*** INVERTING SIGNAL ***")
@@ -190,14 +188,14 @@ def do_calibrate(self):
 
 def stop_capture_timer(self):
     """Stops the capture timer AND graph update timer."""
-    if(self.capture_timer.isActive()):
+    if self.capture_timer.isActive():
         self.stop_graph_timer()
         self.capture_timer.stop()
 
 def start_capture_timer(self):
     """Starts the capture timer AND graph update timer."""
     self.ser.reset_input_buffer()
-    if(not self.capture_timer.isActive()):
+    if not self.capture_timer.isActive():
         self.capture_timer.start(self.capture_rate_ms)
         self.start_graph_timer()
 

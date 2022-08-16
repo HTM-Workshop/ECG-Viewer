@@ -18,36 +18,37 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
-# String used in the title-bar and about window
-VERSION = "v2.0.0-b.2"
-
 import os
 import sys
-import math
 import time
+import platform
 import serial
 import numpy
-import platform
 import pyqtgraph as pg
-import statistics as stat
-
-# import locals
-import images_qr
-from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
-from pyqtgraph import PlotWidget
-from debug import debug_timer
-from ecg_viewer_window import Ui_MainWindow
-from about import Ui_about_window
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 # manual includes to fix occasional compile problem
-from ecg_viewer_window import Ui_MainWindow
 from pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt5 import *
 from pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5 import *
 from pyqtgraph.imageview.ImageViewTemplate_pyqt5 import *
 from pyqtgraph.console.template_pyqt5 import *
 
+# import locals
+from debug import debug_timer
+from ecg_viewer_window import Ui_MainWindow
+from about import Ui_about_window
+
+
+# String used in the title-bar and about window
+VERSION = "v2.0.0-b.2"
+
+
 # About window. The class is so tiny it might as well be defined here.
 class AboutWindow(QtWidgets.QDialog, Ui_about_window):
+    """
+    About dialog box window.
+    """
+
     def __init__(self, *args, **kwargs):
         super(AboutWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
@@ -57,6 +58,9 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
 
 
 class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
+    """
+    Main class for the ECG Viewer application.
+    """
 
     # import class methods
     from _ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
@@ -243,12 +247,11 @@ def print_sys_info() -> None:
 def main():
     print_sys_info()
     app = QtWidgets.QApplication(sys.argv)
-    main = ECGViewer()
-    main.show()
+    main_app = ECGViewer()
+    main_app.show()
     check_resolution(app)
     sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
     main()
-

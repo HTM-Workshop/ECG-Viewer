@@ -20,11 +20,9 @@
 
 import math
 import numpy
-import statistics as stat
 import pyqtgraph as pg
-from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
+from PyQt5 import QtCore
 from scipy.signal import savgol_filter
-from ecg_viewer_window import Ui_MainWindow
 
 
 
@@ -46,7 +44,7 @@ def draw_graph(self):
 
 
     # Visually shows signal tracking information. VERY SLOW IF ENABLED
-    if(self.show_track.isChecked()):
+    if self.show_track.isChecked():
         mean = self.value_history.mean()
         center = self.detect_peaks()
         self.graph.clear()
@@ -57,7 +55,7 @@ def draw_graph(self):
         self.graph.addItem(mean_line)
 
         # select datapoints to graph depending on if the capture is actively running or not
-        if(self.run == True):
+        if self.run:
             sel_peaks = self.peaks[::-1][0:2]
             sel_hold  = self.peaks[::-1][1:2]
         else:
@@ -92,7 +90,7 @@ def graph_fit(self):
     )
 
 def bold_toggle(self):
-    if(self.actionBold_Line.isChecked()):
+    if self.actionBold_Line.isChecked():
         self.green_pen = pg.mkPen('g', width = 2)
     else:
         self.green_pen = pg.mkPen('g', width = 1)
@@ -100,16 +98,16 @@ def bold_toggle(self):
     self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
 
 def stop_graph_timer(self):
-    if(self.graph_timer.isActive()):
+    if self.graph_timer.isActive():
         self.graph_timer.stop()
 
 def start_graph_timer(self):
-    if(not self.graph_timer.isActive()):
+    if not self.graph_timer.isActive():
         self.graph_timer.start(self.graph_timer_ms)
 
 def restart_graph_timer(self):
     self.graph_frame_rate = self.FPSGroup.checkedAction().data()
     self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
-    if(self.graph_timer.isActive()):
+    if self.graph_timer.isActive():
         self.graph_timer.stop()
         self.graph_timer.start(self.graph_timer_ms)

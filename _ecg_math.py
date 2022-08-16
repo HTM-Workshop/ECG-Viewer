@@ -19,12 +19,11 @@
 #  MA 02110-1301, USA.
 
 import math
-import numpy
 import statistics as stat
 from scipy import signal
 
 
-def detect_peaks(self, sig_prominence: int = 20, sig_distance: int = 60) -> float:
+def detect_peaks(self) -> float:
     """
     Detects peaks using scipy.
 
@@ -54,17 +53,15 @@ def update_hr(self) -> None:
     Converts the average time between peaks to frequency.
     """
 
-    times = list()
-    if(len(self.peaks) > 1):
-        for i, v in enumerate(self.peaks):
-            if(i != 0):
-                #last = self.value_history_timed[self.peaks[i - 1]][1]
+    times = []
+    if len(self.peaks) > 1:
+        for i, value in enumerate(self.peaks):
+            if i:
                 last = self.time_history[self.peaks[i - 1]]
-                #times.append(self.value_history_timed[v][1] - last)
-                times.append(self.time_history[v] - last)
-    if(len(times)):
-        f = (1 / (sum(times) / len(times)))
-        rate = f * 1000 * 60
+                times.append(self.time_history[value] - last)
+    if len(times) > 1:
+        freq = (1 / (sum(times) / len(times)))
+        rate = freq * 1000 * 60
 
         # update heart rate history
         self.rate_alarm_history.append(rate)
@@ -77,17 +74,16 @@ def update_hr(self) -> None:
         avg = math.floor(stat.mean(self.rate_alarm_history))
 
         self.clear_message()
-        if(avg > self.high_limit_box.value()):
+        if avg > self.high_limit_box.value():
             self.rate_alarm_active = True
             self.alarm_on("MAX RATE ALARM")
-        if(self.low_limit_box.value() > avg):
+        if self.low_limit_box.value() > avg:
             self.rate_alarm_active = True
             self.alarm_on("MIN RATE ALARM")
-        if(self.rate_alarm_active == True):
+        if self.rate_alarm_active:
             if(avg <= self.high_limit_box.value() and self.low_limit_box.value() <= avg):
                 self.rate_alarm_active = False
                 self.alarm_off()
     else:
         self.lcdNumber.display(0)
         self.set_message("SIGNAL LOSS")
-
