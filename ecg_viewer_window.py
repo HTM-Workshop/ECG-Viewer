@@ -338,7 +338,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "DIYECG Viewer "))
+        MainWindow.setWindowTitle(_translate("MainWindow", "ECG Viewer "))
         self.button_connect.setText(_translate("MainWindow", "Connect"))
         self.button_refresh.setText(_translate("MainWindow", "Refresh"))
         self.label_2.setText(_translate("MainWindow", "Device:"))
