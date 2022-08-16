@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-
-
+#
 #            ECG Viewer
 #   Written by Kevin Williams - 2022
 #
@@ -18,9 +17,10 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
-#  
 
+# String used in the title-bar and about window
 VERSION = "v2.0.0-b.2"
+
 import os
 import sys
 import math
@@ -30,12 +30,14 @@ import numpy
 import platform
 import pyqtgraph as pg
 import statistics as stat
+
+# import locals
+import images_qr
 from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
-import images_qr
 
 # manual includes to fix occasional compile problem
 from ecg_viewer_window import Ui_MainWindow 
@@ -54,11 +56,11 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
         
 
-class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from _ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
-        stop_capture_timer, restart_capture_timer, com_check_device, do_calibrate
+        stop_capture_timer, com_check_device, do_calibrate
     from _ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, \
         stop_graph_timer, start_graph_timer
     from _ecg_math import detect_peaks, update_hr
@@ -66,7 +68,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         run_toggle, export_data_raw, export_data_png, export_data_csv, show_about, display_error_message
 
     def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+        super(ECGViewer, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.about_window = AboutWindow()
         self.graph.disableAutoRange()    
@@ -151,9 +153,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.reset()
         self.com_refresh() 
     
-    # main update loop
+
     def do_update(self) -> None:
-        """Main update loop for ECG Reader. Called via timer"""
+        """
+        Main update loop for ECG Reader. Called via timer.
+        """
 
         # fetches a new reading from the Arduino, stores in value_history and time_history
         reading_ok = self.get_input()
@@ -163,14 +167,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.do_calibrate()     # only add reading to calibration if it was valid
 
         # if we've reached a full sample period, self.capture_index will roll-over back
-        # to zero. When this happens, fit the graph and update the heart rate
+        # to zero. When this happens, fit the graph, find peaks, and update the heart rate
         if(self.capture_index == 0 and reading_ok):
             self.ser.reset_input_buffer()
             self.graph_fit()
+            self.detect_peaks()
             self.update_hr()
             
-    # resets all history, including calibration
+
     def reset(self) -> None:
+        """
+        Resets all record history and calibration. Clears graph.
+        """
+
         self.graph.clear()
         self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         self.capture_index = 0
@@ -180,7 +189,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.value_history = numpy.zeros(self.value_history_max)
         self.time_history  = numpy.zeros(self.value_history_max)
     
+
     def connect_toggle(self) -> None:
+        """
+        Connect/Disconnect from the serial device selected in the dropdown menu.\n
+        This function should be called from the UI.
+        """
+
         if not self.ser.isOpen():
             if self.com_connect():
                 self.button_refresh.setDisabled(True)
@@ -199,6 +214,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 @debug_timer
 def check_resolution(app: QtWidgets.QApplication) -> None:
+    """
+    Checks the resolution to make sure it meets or exceeds the reccomended size.\n
+    Displays a message to the user\n
+    Does not prevent the program from running if the resolution is too low.
+    """
+
     screen = app.primaryScreen().size()
     size_string = str(screen.width()) + " x " + str(screen.height())
     print("Detected resolution: " + size_string)
@@ -208,7 +229,9 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
         error_message.setText("The reccomended minimum display resolution is 1024x768.\n\nYour resolution: " + size_string)
         error_message.exec_()   
 
+
 def print_sys_info() -> None:
+    """Prints system information to console."""
     print(VERSION)
     print(time.ctime())
     print(platform.platform())
@@ -216,13 +239,15 @@ def print_sys_info() -> None:
     print("Directory: " + os.getcwd())
     print('-' * 80)
 
+
 def main():
     print_sys_info()
     app = QtWidgets.QApplication(sys.argv)
-    main = MainWindow()
+    main = ECGViewer()
     main.show()
     check_resolution(app)   
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
