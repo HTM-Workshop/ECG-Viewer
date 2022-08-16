@@ -21,11 +21,17 @@
 #  
 
 VERSION = "v2.0.0-b.2"
-from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
-from pyqtgraph import PlotWidget
+import os
+import sys
+import math
+import time
+import serial
+import numpy
+import platform
 import pyqtgraph as pg
 import statistics as stat
-import sys, os, math, serial, time, platform, numpy
+from PyQt5 import QtWidgets, uic, QtCore, QtWidgets
+from pyqtgraph import PlotWidget
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
@@ -148,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def do_update(self):
         """Main update loop for ECG Reader. Called via timer"""
 
+        # fetches a new reading from the Arduino, stores in value_history and time_history
         reading_ok = self.get_input()
 
         # Run the calibration routine. self.calibrating is a timer that runs until its value is -1

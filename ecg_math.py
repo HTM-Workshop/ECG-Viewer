@@ -1,4 +1,5 @@
-import numpy, math
+import math
+import numpy
 from scipy import signal
 import statistics as stat
 
