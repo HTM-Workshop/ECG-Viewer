@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import csv
 import time
 import pyqtgraph.exporters
@@ -32,6 +33,7 @@ def display_error_message(self, title: str, msg: str) -> None:
 
 # toggle capture on or off
 def run_toggle(self):
+    """Toggles the capture process on or off. Should be called by a single run/stop function"""
     assert self.ser.isOpen()
     if(self.capture_timer.isActive()):
         self.statusBar.showMessage('Capture stopped')  

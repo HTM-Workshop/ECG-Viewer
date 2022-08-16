@@ -1,7 +1,8 @@
+#!/usr/bin/python3
 import math
 import numpy
-from scipy import signal
 import statistics as stat
+from scipy import signal
 
 # detect peaks using scipy. 
 #   prominence: the threshold the peak needs to be at, relative to the surrounding samples

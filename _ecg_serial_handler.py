@@ -1,12 +1,14 @@
+#!/usr/bin/python3
+import time 
+import numpy
+import serial
 import serial.tools.list_ports
-import serial, time, numpy
-from PyQt5 import QtWidgets, uic, QtCore
 import statistics as stat
+from PyQt5 import QtWidgets, uic, QtCore
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 
 # refresh available devices, store in dropdown menu storage    
-@debug_timer
 def com_refresh(self):
     self.port_combo_box.clear()
     available_ports = serial.tools.list_ports.comports()

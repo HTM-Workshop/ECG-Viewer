@@ -44,7 +44,7 @@ from pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5 import *
 from pyqtgraph.imageview.ImageViewTemplate_pyqt5 import *  
 from pyqtgraph.console.template_pyqt5 import * 
 
-
+# About window. The class is so tiny it might as well be defined here.
 class AboutWindow(QtWidgets.QDialog, Ui_about_window):
     def __init__(self, *args, **kwargs):
         super(AboutWindow, self).__init__(*args, **kwargs)
@@ -52,16 +52,17 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
         self.version.setText(VERSION)
         self.icon.setPixmap(QtGui.QPixmap(":/icon/icon.png"))
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
+        
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
-    from ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
+    from _ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
         stop_capture_timer, restart_capture_timer, com_check_device, do_calibrate
-    from ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, \
+    from _ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, \
         stop_graph_timer, start_graph_timer
-    from ecg_math import detect_peaks, update_hr
-    from ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
+    from _ecg_math import detect_peaks, update_hr
+    from _ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
         run_toggle, export_data_raw, export_data_png, export_data_csv, show_about, display_error_message
 
     def __init__(self, *args, **kwargs):
@@ -151,7 +152,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.com_refresh() 
     
     # main update loop
-    def do_update(self):
+    def do_update(self) -> None:
         """Main update loop for ECG Reader. Called via timer"""
 
         # fetches a new reading from the Arduino, stores in value_history and time_history
@@ -169,7 +170,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.update_hr()
             
     # resets all history, including calibration
-    def reset(self):
+    def reset(self) -> None:
         self.graph.clear()
         self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         self.capture_index = 0
@@ -197,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.com_refresh()
 
 @debug_timer
-def check_resolution(app):
+def check_resolution(app) -> None:
     screen = app.primaryScreen().size()
     size_string = str(screen.width()) + " x " + str(screen.height())
     print("Detected resolution: " + size_string)
@@ -207,7 +208,7 @@ def check_resolution(app):
         error_message.setText("The reccomended minimum display resolution is 1024x768.\n\nYour resolution: " + size_string)
         error_message.exec_()   
 
-def print_sys_info():
+def print_sys_info() -> None:
     print(VERSION)
     print(time.ctime())
     print(platform.platform())
