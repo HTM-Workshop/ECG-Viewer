@@ -7,18 +7,18 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
-import time 
+import time
 import numpy
 import serial
 import serial.tools.list_ports
@@ -27,7 +27,7 @@ from PyQt5 import QtWidgets, uic, QtCore
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 
-# refresh available devices, store in dropdown menu storage    
+# refresh available devices, store in dropdown menu storage
 def com_refresh(self):
     """
     Refreshes the list of available serial devices.\n
@@ -59,7 +59,7 @@ def com_check_device(self):
                 c = str(self.ser.read().decode())
                 if c == '$':
                     device_ok = True
-                    break    
+                    break
         except Exception as e:
             print(e)
             time.sleep(1)
@@ -79,7 +79,7 @@ def com_connect(self):
     # fetch port name from dropdown menu
     try:
         current_index = self.port_combo_box.currentIndex()
-        com_port = self.port_combo_box.itemData(current_index) 
+        com_port = self.port_combo_box.itemData(current_index)
         if not com_port:
             raise ValueError("No port selected.")
     except ValueError:
@@ -89,8 +89,8 @@ def com_connect(self):
         self.display_error_message("Invalid port type", str(e))
         print(e)
         return False
-    
-    # connect to port 
+
+    # connect to port
     try:
         self.ser.port = com_port
         self.ser.open()
@@ -103,16 +103,16 @@ def com_connect(self):
         self.display_error_message("Device Error", """Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.""")
         self.ser.close()
         return False
-    
+
     # device is connected and test has passed
     print("Connection to {} succesful.".format(com_port))
-    return True  
+    return True
 
-        
+
 # Fetch a value from the Arduino
 def get_input(self) -> bool:
     """Fetches a measurement from the Arduino, stores value in value_history and time_history.\n
-    Returns True if reading was valid. 
+    Returns True if reading was valid.
     Returns False if reading was invalid or unsucessful.
     """
 
@@ -150,13 +150,13 @@ def get_input(self) -> bool:
     val = self.invert_modifier * self.current_reading
     self.value_history[self.capture_index] = val
     self.time_history[self.capture_index] = self.capture_timer_qt.elapsed()
-    self.capture_index = (self.capture_index + 1) % self.value_history_max 
+    self.capture_index = (self.capture_index + 1) % self.value_history_max
     return True
 
-def do_calibrate(self):    
-    """ 
+def do_calibrate(self):
+    """
     Perform calibration. Capture data as normal until self.calibrating counter is zero.\n
-    If the peak value is below the mean, invert the signal. 
+    If the peak value is below the mean, invert the signal.
     """
 
     if(self.calibrating > 0):
@@ -175,8 +175,8 @@ def do_calibrate(self):
             if(self.autoinvert_checkbox.isChecked()):
                 if(min_delta > max_delta):
                     self.invert_modifier = self.invert_modifier * -1
-                    self.statusBar.showMessage('Inverting input signal')  
-                    print("*** INVERTING SIGNAL ***") 
+                    self.statusBar.showMessage('Inverting input signal')
+                    print("*** INVERTING SIGNAL ***")
         else:
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
