@@ -40,7 +40,7 @@ from about import Ui_about_window
 
 
 # String used in the title-bar and about window
-VERSION = "v2.0.0-b.2"
+VERSION = "v2.0.0-b.3"
 
 
 # About window. The class is so tiny it might as well be defined here.
