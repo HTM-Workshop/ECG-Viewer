@@ -198,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.com_refresh()
 
 @debug_timer
-def check_resolution(app) -> None:
+def check_resolution(app: QtWidgets.QApplication) -> None:
     screen = app.primaryScreen().size()
     size_string = str(screen.width()) + " x " + str(screen.height())
     print("Detected resolution: " + size_string)

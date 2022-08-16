@@ -94,7 +94,7 @@ def get_input(self) -> bool:
         msg.setWindowTitle("Connection Error")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
-        return
+        return False
 
     # get response from Arduino, terminated by newline character
     buf = ''
