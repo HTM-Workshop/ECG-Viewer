@@ -37,6 +37,7 @@ from pyqtgraph.console.template_pyqt5 import *
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
+import images_qr
 
 
 # String used in the title-bar and about window
