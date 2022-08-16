@@ -37,11 +37,10 @@ def draw_graph(self):
             mode = 'interp',
             )[25:self.value_history_max - 25]
     except Exception as e:
-        self.window_length_box.setValue(99)
-        self.polyorder_box.setValue(9)
+        self.window_length_box.setValue(199)
+        self.polyorder_box.setValue(7)
         print(e)
     self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
-
 
     # Visually shows signal tracking information. VERY SLOW IF ENABLED
     if self.show_track.isChecked():
