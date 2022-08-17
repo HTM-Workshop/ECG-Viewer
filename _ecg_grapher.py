@@ -71,11 +71,14 @@ def draw_graph(self) -> None:
             self.graph.addItem(l)
 
 
-# When called, this automatically rescales the graph to fit the data plus
-# a padding factor. The padding factor is fetched from the "zoom" slider in the
-# GUI. This function is fairly slow and should only be called periodically. By
-# default, it's only called once a complete sample period has elapsed.
-def graph_fit(self):
+def graph_fit(self) -> None:
+    """
+    When called, this automatically rescales the graph to fit the data plus
+    a padding factor. The padding factor is fetched from the "zoom" slider in the
+    GUI. This function is fairly slow and should only be called periodically. By
+    default, it's only called once a complete sample period has elapsed.
+    """
+
     self.graph_padding_factor = self.graph_zoom_slider.value() / 100
     high = self.value_history.max()
     low  = self.value_history.min()
@@ -87,7 +90,14 @@ def graph_fit(self):
         yRange = (high + pad , low - pad)
     )
 
-def bold_toggle(self):
+def bold_toggle(self) -> None:
+    """
+    Doubles the width of the "pen" used to draw the graph. There is a performance
+    penalty associated with a heavier line. On slower computers, it can be useful
+    to reduce the thickness of the line to increase speed. This should be called 
+    from a UI checkbox" 
+    """
+
     if self.actionBold_Line.isChecked():
         self.green_pen = pg.mkPen('g', width = 2)
     else:
@@ -96,14 +106,21 @@ def bold_toggle(self):
     self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
 
 def stop_graph_timer(self):
+    """Stops the graph update timer."""
     if self.graph_timer.isActive():
         self.graph_timer.stop()
 
 def start_graph_timer(self):
+    """Starts the graph update timer."""
     if not self.graph_timer.isActive():
         self.graph_timer.start(self.graph_timer_ms)
 
 def restart_graph_timer(self):
+    """
+    Updates the refresh rate timings for the graph drawing routine. If the
+    timer is running, the timer will stop and restart with the new timing.
+    This will not start the timer if the timer wasn't running when called. 
+    """
     self.graph_frame_rate = self.FPSGroup.checkedAction().data()
     self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
     if self.graph_timer.isActive():

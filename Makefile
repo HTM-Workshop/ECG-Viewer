@@ -2,7 +2,7 @@
 all:
 	make install-reqs
 	pip3 install pyinstaller
-	python3 -m PyInstaller --windowed --clean --onedir --icon=icon/icon.png ecg_viewer.py*
+	python3 -m PyInstaller --name="ECG Viewer" --windowed --clean --onedir --icon=icon/icon.png ecg_viewer.py*
 clean:
 	rm -rf build
 	rm -rf __pycache__
