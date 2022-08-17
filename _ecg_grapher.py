@@ -25,7 +25,7 @@ from PyQt5 import QtCore
 from scipy.signal import savgol_filter
 
 
-def draw_graph(self) -> None:
+def graph_draw(self) -> None:
     """
     Draws the data stored in self.value_history to the pyqtgraph window.\n
     Pulls the status of the 'Show Signal Tracking' checkbox.\n
@@ -52,7 +52,7 @@ def draw_graph(self) -> None:
     # Otherwise, display raw waveform with tracking information. VERY SLOW IF ENABLED
     else:
         mean = self.value_history.mean()
-        center = self.detect_peaks()
+        center = self.math_detect_peaks()
         self.graph.clear()
         self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         center_line = pg.InfiniteLine(pos = center, angle = 0, movable = False, pen = self.yellow_pen)
@@ -90,7 +90,7 @@ def graph_fit(self) -> None:
         yRange = (high + pad , low - pad)
     )
 
-def bold_toggle(self) -> None:
+def graph_bold_toggle(self) -> None:
     """
     Doubles the width of the "pen" used to draw the graph. There is a performance
     penalty associated with a heavier line. On slower computers, it can be useful
@@ -105,17 +105,17 @@ def bold_toggle(self) -> None:
     self.graph.clear()
     self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
 
-def stop_graph_timer(self):
+def graph_stop_timer(self):
     """Stops the graph update timer."""
     if self.graph_timer.isActive():
         self.graph_timer.stop()
 
-def start_graph_timer(self):
+def graph_start_timer(self):
     """Starts the graph update timer."""
     if not self.graph_timer.isActive():
         self.graph_timer.start(self.graph_timer_ms)
 
-def restart_graph_timer(self):
+def graph_restart_timer(self):
     """
     Updates the refresh rate timings for the graph drawing routine. If the
     timer is running, the timer will stop and restart with the new timing.

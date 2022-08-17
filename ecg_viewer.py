@@ -66,13 +66,13 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
     """
 
     # import class methods
-    from _ecg_serial_handler import com_connect, com_refresh, get_input, start_capture_timer, \
-        stop_capture_timer, com_check_device, do_calibrate
-    from _ecg_grapher import draw_graph, graph_fit, bold_toggle, restart_graph_timer, \
-        stop_graph_timer, start_graph_timer
-    from _ecg_math import detect_peaks, update_hr
-    from _ecg_ui_handler import alarm_on, alarm_off, set_message, clear_message, force_invert, \
-        run_toggle, export_data_raw, export_data_png, export_data_csv, show_about, display_error_message
+    from _ecg_serial_handler import ser_com_connect, ser_com_refresh, ser_get_input, ser_start_capture_timer, \
+        ser_stop_capture_timer, ser_check_device, ser_do_calibrate
+    from _ecg_grapher import graph_draw, graph_fit, graph_bold_toggle, graph_restart_timer, \
+        graph_stop_timer, graph_start_timer
+    from _ecg_math import math_detect_peaks, math_update_hr
+    from _ecg_ui_handler import ui_alarm_on, ui_alarm_off, ui_set_message, ui_clear_message, ui_force_invert, \
+        ui_run_toggle, ui_export_data_raw, ui_export_data_png, ui_export_data_csv, ui_show_about, ui_display_error_message
 
     def __init__(self, *args, **kwargs):
         super(ECGViewer, self).__init__(*args, **kwargs)
@@ -91,7 +91,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # graph timer
         self.graph_timer = QtCore.QTimer()
-        self.graph_timer.timeout.connect(self.draw_graph)
+        self.graph_timer.timeout.connect(self.graph_draw)
         self.graph_frame_rate = 30                                 # change to adjust refresh rate
         self.graph_timer_ms = int(1 / (self.graph_frame_rate / 1000))
 
@@ -101,27 +101,27 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action8_FPS.setData(8)
 
         # Connect buttons to methods
-        self.button_refresh.clicked.connect(self.com_refresh)
+        self.button_refresh.clicked.connect(self.ser_com_refresh)
         self.button_connect.clicked.connect(self.connect_toggle)
         self.button_reset.clicked.connect(self.reset)
-        self.button_run.clicked.connect(self.run_toggle)
-        self.button_force_invert.clicked.connect(self.force_invert)
+        self.button_run.clicked.connect(self.ui_run_toggle)
+        self.button_ui_force_invert.clicked.connect(self.ui_force_invert)
         self.graph_zoom_slider.sliderReleased.connect(self.graph_fit)
         self.show_track.stateChanged.connect(self.reset)
-        self.FPSGroup.triggered.connect(self.restart_graph_timer)
+        self.FPSGroup.triggered.connect(self.graph_restart_timer)
         self.button_run.setDisabled(True)
-        self.actionBold_Line.toggled.connect(self.bold_toggle)
-        self.actionRAW.triggered.connect(self.export_data_raw)
-        self.actionPNG.triggered.connect(self.export_data_png)
-        self.actionCSV.triggered.connect(self.export_data_csv)
-        self.actionAbout.triggered.connect(self.show_about)
+        self.actionBold_Line.toggled.connect(self.graph_bold_toggle)
+        self.actionRAW.triggered.connect(self.ui_export_data_raw)
+        self.actionPNG.triggered.connect(self.ui_export_data_png)
+        self.actionCSV.triggered.connect(self.ui_export_data_csv)
+        self.actionAbout.triggered.connect(self.ui_show_about)
         self.actionGet_Source_Code.triggered.connect(self.open_source_code_webpage)
         self.actionQuit.triggered.connect(sys.exit)
 
         # set tooltips
         self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
         self.prominence_box.setToolTip("The expected magnitude of the peaks. Lower to increase sensitivity.")
-        self.button_force_invert.setToolTip("Inverts the waveform. Useful if calibration didn't automatically invert the signal.")
+        self.button_ui_force_invert.setToolTip("Inverts the waveform. Useful if calibration didn't automatically invert the signal.")
         self.show_track.setToolTip("Show the real-time peak detection. Disables filtering while on")
         self.button_reset.setToolTip("Clears graph data. Forces recalibration.")
         self.button_run.setToolTip("Pauses data capture.")
@@ -159,7 +159,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # perform initial reset
         self.reset()
-        self.com_refresh()
+        self.ser_com_refresh()
 
     def open_source_code_webpage(self):
         """
@@ -169,7 +169,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
             wb_open("https://github.com/BB121-LAB/ecg_viewer", autoraise = True)
         except wb_error as error:
             error_msg = "Could not open URL.\n\n" + error
-            self.display_error_message("Open URL Error", error_msg)
+            self.ui_display_error_message("Open URL Error", error_msg)
 
 
     def do_update(self) -> None:
@@ -178,19 +178,19 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         # fetches a new reading from the Arduino, stores in value_history and time_history
-        reading_ok = self.get_input()
+        reading_ok = self.ser_get_input()
 
         # Run the calibration routine. self.calibrating is a timer that runs until its value is -1
         if(self.calibrating > -1 and reading_ok):
-            self.do_calibrate()     # only add reading to calibration if it was valid
+            self.ser_do_calibrate()     # only add reading to calibration if it was valid
 
         # if we've reached a full sample period, self.capture_index will roll-over back
         # to zero. When this happens, fit the graph, find peaks, and update the heart rate
         if(self.capture_index == 0 and reading_ok):
             self.ser.reset_input_buffer()
             self.graph_fit()
-            self.detect_peaks()
-            self.update_hr()
+            self.math_detect_peaks()
+            self.math_update_hr()
 
 
     def reset(self) -> None:
@@ -201,7 +201,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.graph.clear()
         self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
         self.capture_index = 0
-        self.alarm_off()
+        self.ui_alarm_off()
         self.rate_alarm_active = False
         self.calibrating = self.value_history_max + 1
         self.value_history = numpy.zeros(self.value_history_max)
@@ -215,20 +215,20 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         if not self.ser.isOpen():
-            if self.com_connect():
+            if self.ser_com_connect():
                 self.button_refresh.setDisabled(True)
                 self.button_run.setDisabled(False)
                 self.button_connect.setText("Disconnect")
                 self.invert_modifier = 1
                 self.reset()
-                self.start_capture_timer()
+                self.ser_start_capture_timer()
         else:
-            self.stop_capture_timer()
+            self.ser_stop_capture_timer()
             self.ser.close()
             self.button_refresh.setDisabled(False)
             self.button_run.setDisabled(True)
             self.button_connect.setText("Connect")
-            self.com_refresh()
+            self.ser_com_refresh()
 
 @debug_timer
 def check_resolution(app: QtWidgets.QApplication) -> None:
