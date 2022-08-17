@@ -67,7 +67,7 @@ def draw_graph(self) -> None:
 
         # display holdoff
         for p in self.peaks:
-            l = pg.InfiniteLine(pos = p + self.holdoff_box.value(), angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255), style = QtCore.Qt.DotLine))
+            l = pg.InfiniteLine(pos = p + self.holdoff_box.value(), angle = 90, movable = False, pen = pg.mkPen(color=(200, 200, 255)))
             self.graph.addItem(l)
 
 
