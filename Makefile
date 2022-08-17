@@ -10,6 +10,7 @@ clean:
 	rm -f *.spec
 	rm -f ECG_*.png
 	rm -f *csv
+	rm -rf .mypy_cache
 clean-all:
 	rm -f *.spec
 	make clean

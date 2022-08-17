@@ -24,6 +24,22 @@ import pyqtgraph.exporters
 from PyQt5 import QtWidgets, QtCore
 
 
+def ui_set_tooltips(self):
+    """Sets the UI tooltips."""
+    self.holdoff_box.setToolTip("Time to wait until it detects the next peak. Set higher if the heart rate triggers too quickly.")
+    self.prominence_box.setToolTip("The expected magnitude of the peaks. Lower to increase sensitivity.")
+    self.button_ui_force_invert.setToolTip("Inverts the waveform. Useful if calibration didn't automatically invert the signal.")
+    self.show_track.setToolTip("Show the real-time peak detection. Disables filtering while on")
+    self.button_reset.setToolTip("Clears graph data. Forces recalibration.")
+    self.button_run.setToolTip("Pauses data capture.")
+    self.button_refresh.setToolTip("Refresh the list of connected devices.")
+    self.button_connect.setToolTip("Connected to the selected device.")
+    self.graph_zoom_slider.setToolTip("Changes the vertical zoom of the graph.")
+    self.window_length_box.setToolTip("Higher values give more consistent filtering, but increases bias error. VALUE MUST BE ODD.")
+    self.polyorder_box.setToolTip("Determines the 'complexity' of the filtering applied. Higher values retain more resolution.")
+    self.actionBold_Line.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
+
+
 # message box methods
 def ui_alarm_on(self, text):
     """Display alarm text in alert box."""

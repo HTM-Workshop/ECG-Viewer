@@ -90,6 +90,7 @@ def graph_fit(self) -> None:
         yRange = (high + pad , low - pad)
     )
 
+
 def graph_bold_toggle(self) -> None:
     """
     Doubles the width of the "pen" used to draw the graph. There is a performance
@@ -105,15 +106,18 @@ def graph_bold_toggle(self) -> None:
     self.graph.clear()
     self.curve = self.graph.plot(numpy.arange(self.value_history.size), self.value_history, pen = self.green_pen, skipFiniteCheck = True)
 
+
 def graph_stop_timer(self):
     """Stops the graph update timer."""
     if self.graph_timer.isActive():
         self.graph_timer.stop()
 
+
 def graph_start_timer(self):
     """Starts the graph update timer."""
     if not self.graph_timer.isActive():
         self.graph_timer.start(self.graph_timer_ms)
+
 
 def graph_restart_timer(self):
     """
