@@ -25,32 +25,32 @@ from PyQt5 import QtWidgets, QtCore
 
 
 # message box methods
-def alarm_on(self, text):
+def ui_alarm_on(self, text):
     """Display alarm text in alert box."""
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: red }")
     self.alarm_text.setText(text)
-def alarm_off(self):
+def ui_alarm_off(self):
     """Clear alert box."""
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
-def set_message(self, text):
+def ui_set_message(self, text):
     """Display status message in alert box."""
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
     self.alarm_text.setText(text)
-def clear_message(self):
+def ui_clear_message(self):
     """Clear alert box."""
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
     self.alarm_text.setText("")
 
 
-def force_invert(self):
+def ui_force_invert(self):
     """Forces inversion of the graph data. Should be called from UI button."""
     self.invert_modifier = self.invert_modifier * -1
 
 
-def display_error_message(self, title: str, msg: str) -> None:
+def ui_display_error_message(self, title: str, msg: str) -> None:
     """Display a generic error message to the user."""
     error_message = QtWidgets.QMessageBox()
     error_message.setWindowTitle(title)
@@ -59,25 +59,25 @@ def display_error_message(self, title: str, msg: str) -> None:
 
 
 # toggle capture on or off
-def run_toggle(self):
+def ui_run_toggle(self):
     """Toggles the capture process on or off. Should be called by a single run/stop function."""
     assert self.ser.isOpen()
     if(self.capture_timer.isActive()):
         self.statusBar.showMessage('Capture stopped')
         self.button_run.setText("Run")
-        self.stop_capture_timer()
+        self.ser_stop_capture_timer()
     else:
         self.statusBar.showMessage('Capture running')
         self.button_run.setText("Stop")
-        self.start_capture_timer()
+        self.ser_start_capture_timer()
 
 
-def show_about(self):
+def ui_show_about(self):
     """Shows the About dialog window."""
     self.about_window.show()
 
 
-def export_data_raw(self):
+def ui_export_data_raw(self):
     """
     Exports a RAW binary data file of the currently recorded information, pre-filtered.\n
     Pauses capture (if running) and shows a file save dialog.\n
@@ -85,7 +85,7 @@ def export_data_raw(self):
     """
 
     capture_running = self.capture_timer.isActive()
-    self.stop_capture_timer()
+    self.ser_stop_capture_timer()
     default_filename = str(time.time()).split('.', maxsplit=1)[0] + '.bin'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
     if filename:
@@ -97,12 +97,12 @@ def export_data_raw(self):
             f.flush()
             f.close()
         except Exception as e:
-            self.display_error_message("Export Error", e)
+            self.ui_display_error_message("Export Error", e)
     if(capture_running):
-        self.start_capture_timer()
+        self.ser_start_capture_timer()
 
 
-def export_data_png(self):
+def ui_export_data_png(self):
     """
     Exports a PNG image file of the currently displayed information.\n
     Pauses capture (if running) and shows a file save dialog.\n
@@ -110,7 +110,7 @@ def export_data_png(self):
     """
 
     capture_running = self.capture_timer.isActive()
-    self.stop_capture_timer()
+    self.ser_stop_capture_timer()
     default_filename = str(time.time()).split('.', maxsplit=1)[0] + '.png'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
     if filename:
@@ -119,12 +119,12 @@ def export_data_png(self):
             exporter = pyqtgraph.exporters.ImageExporter(self.graph.getPlotItem())
             exporter.export(filename)
         except Exception as e:
-            self.display_error_message("Export Error", e)
+            self.ui_display_error_message("Export Error", e)
     if(capture_running):
-        self.start_capture_timer()
+        self.ser_start_capture_timer()
 
 
-def export_data_csv(self):
+def ui_export_data_csv(self):
     """
     Exports a CSV file of the currently recorded information, pre-filtered.\n
     Pauses capture (if running) and shows a file save dialog.\n
@@ -132,7 +132,7 @@ def export_data_csv(self):
     """
 
     capture_running = self.capture_timer.isActive()
-    self.stop_capture_timer()
+    self.ser_stop_capture_timer()
     default_filename = str(time.time()).split('.', maxsplit=1)[0] + '.csv'
     filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", directory = default_filename)[0]
     if filename:
@@ -143,6 +143,6 @@ def export_data_csv(self):
             csv_file.flush()
             csv_file.close()
         except Exception as e:
-            self.display_error_message("Export Error", e)
+            self.ui_display_error_message("Export Error", e)
     if(capture_running):
-        self.start_capture_timer()
+        self.ser_start_capture_timer()

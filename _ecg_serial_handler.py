@@ -25,7 +25,7 @@ import statistics as stat
 from debug import debug_timer
 
 # refresh available devices, store in dropdown menu storage
-def com_refresh(self):
+def ser_com_refresh(self):
     """
     Refreshes the list of available serial devices.\n
     Results are stored in the dropdown menu.\n
@@ -38,7 +38,7 @@ def com_refresh(self):
 
 
 @debug_timer
-def com_check_device(self) -> bool:
+def ser_check_device(self) -> bool:
     """
     Checks to see if the Arduino is responding the way we expect.\n
     Returns True if device is responding properly.\n
@@ -66,7 +66,7 @@ def com_check_device(self) -> bool:
 
 
 @debug_timer
-def com_connect(self) -> bool:
+def ser_com_connect(self) -> bool:
     """
     Connect/Disconnect from the serial device selected in the devices dropdown menu.\n
     Returns True if the connection was sucessful.\n
@@ -83,7 +83,7 @@ def com_connect(self) -> bool:
         self.statusBar.showMessage('No device selected!')
         return False
     except TypeError as e:
-        self.display_error_message("Invalid port type", str(e))
+        self.ui_display_error_message("Invalid port type", str(e))
         print(e)
         return False
 
@@ -92,12 +92,12 @@ def com_connect(self) -> bool:
         self.ser.port = com_port
         self.ser.open()
     except serial.serialutil.SerialException as e:
-        self.display_error_message("Connection Failure", str(e))
+        self.ui_display_error_message("Connection Failure", str(e))
         return False
 
     # detect if device is responding properly
-    if not self.com_check_device():
-        self.display_error_message("Device Error", """Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.""")
+    if not self.ser_check_device():
+        self.ui_display_error_message("Device Error", """Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.""")
         self.ser.close()
         return False
 
@@ -107,7 +107,7 @@ def com_connect(self) -> bool:
 
 
 # Fetch a value from the Arduino
-def get_input(self) -> bool:
+def ser_get_input(self) -> bool:
     """Fetches a measurement from the Arduino, stores value in value_history and time_history.\n
     Returns True if reading was valid.
     Returns False if reading was invalid or unsucessful.
@@ -117,12 +117,12 @@ def get_input(self) -> bool:
     try:
         self.ser.write('\n'.encode())
     except Exception as e:
-        self.stop_capture_timer()
+        self.ser_stop_capture_timer()
         print(e)
         print(self.ser.isOpen())
         self.connect_toggle()
         err_msg = "Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{}".format(e)
-        self.display_error_message("Connection Error", err_msg)
+        self.ui_display_error_message("Connection Error", err_msg)
         return False
 
     # get response from Arduino, terminated by newline character
@@ -151,7 +151,7 @@ def get_input(self) -> bool:
     self.capture_index = (self.capture_index + 1) % self.value_history_max
     return True
 
-def do_calibrate(self) -> None:
+def ser_do_calibrate(self) -> None:
     """
     Perform calibration. Capture data as normal until self.calibrating counter is zero.\n
     If the peak value is below the mean, invert the signal.
@@ -160,7 +160,7 @@ def do_calibrate(self) -> None:
     if self.calibrating > 0:
         self.calibrating = self.calibrating - 1
     elif self.calibrating == 0:
-        self.clear_message()
+        self.ui_clear_message()
         window = 150
         peak_samples = 3
         temp_array = self.value_history[window:self.value_history_max - window].copy()
@@ -186,17 +186,17 @@ def do_calibrate(self) -> None:
         print("MIN DELTA : {}".format(min_delta))
         print("CIDX      : {}".format(self.capture_index))
 
-def stop_capture_timer(self):
+def ser_stop_capture_timer(self):
     """Stops the capture timer AND graph update timer."""
     if self.capture_timer.isActive():
-        self.stop_graph_timer()
+        self.graph_stop_timer()
         self.capture_timer.stop()
 
-def start_capture_timer(self):
+def ser_start_capture_timer(self):
     """Starts the capture timer AND graph update timer."""
     self.ser.reset_input_buffer()
     if not self.capture_timer.isActive():
         self.capture_timer.start(self.capture_rate_ms)
-        self.start_graph_timer()
+        self.graph_start_timer()
 
 

@@ -23,7 +23,7 @@ import statistics as stat
 from scipy import signal
 
 
-def detect_peaks(self) -> float:
+def math_detect_peaks(self) -> float:
     """
     Detects peaks using scipy.
 
@@ -47,7 +47,7 @@ def detect_peaks(self) -> float:
     return center
 
 
-def update_hr(self) -> None:
+def math_update_hr(self) -> None:
     """
     Update the heart rate LCD reading.\n
     Converts the average time between peaks to frequency.
@@ -73,17 +73,17 @@ def update_hr(self) -> None:
         # check if rate alarm has been tripped or reset, this should probably be moved
         avg = math.floor(stat.mean(self.rate_alarm_history))
 
-        self.clear_message()
+        self.ui_clear_message()
         if avg > self.high_limit_box.value():
             self.rate_alarm_active = True
-            self.alarm_on("MAX RATE ALARM")
+            self.ui_alarm_on("MAX RATE ALARM")
         if self.low_limit_box.value() > avg:
             self.rate_alarm_active = True
-            self.alarm_on("MIN RATE ALARM")
+            self.ui_alarm_on("MIN RATE ALARM")
         if self.rate_alarm_active:
             if(avg <= self.high_limit_box.value() and self.low_limit_box.value() <= avg):
                 self.rate_alarm_active = False
-                self.alarm_off()
+                self.ui_alarm_off()
     else:
         self.lcdNumber.display(0)
-        self.set_message("SIGNAL LOSS")
+        self.ui_set_message("SIGNAL LOSS")
