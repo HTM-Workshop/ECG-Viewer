@@ -36,10 +36,8 @@ The ‘make’ command will need to be installed. Open a terminal window, type �
 
 
 ## Screenshots
-![version_1 1 0_win](https://user-images.githubusercontent.com/64606561/182402522-b2fe3eff-01d4-4bc9-ad85-041b43a4a084.png)
-![version_1 1 0_mac](https://user-images.githubusercontent.com/64606561/182402519-286e66b4-ecd2-485e-ac6f-dc65fa093e31.png)
-![version_1 1 0_lin](https://user-images.githubusercontent.com/64606561/182402518-d9b7552e-01ac-4c81-8674-1c34a27f5348.png)
-
-
+![windows10](https://user-images.githubusercontent.com/64606561/185225516-5170e257-abee-42b6-94be-5fef80a741ec.png)
+![macos](https://user-images.githubusercontent.com/64606561/185225535-6c0dd537-25da-4677-a7ae-2ce6710792fb.png)
+![linux](https://user-images.githubusercontent.com/64606561/185225538-dc4175d9-f8cb-4137-9f28-687ec8bc5c2d.png)
 
 
