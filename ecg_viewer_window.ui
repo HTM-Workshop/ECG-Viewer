@@ -679,7 +679,26 @@
     <addaction name="actionCSV"/>
     <addaction name="actionRAW"/>
    </widget>
+   <widget class="QMenu" name="menuCapture">
+    <property name="title">
+     <string>Capture</string>
+    </property>
+    <widget class="QMenu" name="menuWindow_Size">
+     <property name="title">
+      <string>Window Size</string>
+     </property>
+     <addaction name="action2000"/>
+     <addaction name="action5000"/>
+     <addaction name="action8000"/>
+     <addaction name="action10000"/>
+    </widget>
+    <addaction name="actionStart_Stop"/>
+    <addaction name="actionReset"/>
+    <addaction name="separator"/>
+    <addaction name="menuWindow_Size"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuCapture"/>
    <addaction name="menuExport"/>
    <addaction name="menuExport_2"/>
    <addaction name="menuHelp"/>
@@ -720,7 +739,17 @@
     <string>RAW</string>
    </property>
   </action>
-  <action name="actionClear">
+  <action name="actionGet_Source_Code">
+   <property name="text">
+    <string>Get Source Code</string>
+   </property>
+  </action>
+  <action name="actionCapture_Rate">
+   <property name="text">
+    <string>Capture Window Size</string>
+   </property>
+  </action>
+  <action name="actionReset">
    <property name="text">
     <string>Reset</string>
    </property>
@@ -730,21 +759,24 @@
     <string>Start / Stop</string>
    </property>
   </action>
-  <action name="actionGet_Source_Code">
-   <property name="text">
-    <string>Get Source Code</string>
-   </property>
-  </action>
-  <actiongroup name="CaptureRateGroup">
-   <action name="actionFastest">
+  <actiongroup name="WindowSizeGroup">
+   <action name="action2000">
     <property name="checkable">
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>Fastest (unstable)</string>
+     <string>2000</string>
     </property>
    </action>
-   <action name="actionFast">
+   <action name="action5000">
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>5000</string>
+    </property>
+   </action>
+   <action name="action8000">
     <property name="checkable">
      <bool>true</bool>
     </property>
@@ -752,23 +784,15 @@
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>Fast</string>
+     <string>8000</string>
     </property>
    </action>
-   <action name="actionMedium">
+   <action name="action10000">
     <property name="checkable">
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>Medium</string>
-    </property>
-   </action>
-   <action name="actionSlow">
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-    <property name="text">
-     <string>Slow</string>
+     <string>10000</string>
     </property>
    </action>
   </actiongroup>
