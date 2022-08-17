@@ -534,7 +534,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="button_force_invert">
+          <widget class="QPushButton" name="button_ui_force_invert">
            <property name="minimumSize">
             <size>
              <width>195</width>
