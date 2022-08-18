@@ -79,7 +79,7 @@ def ser_com_connect(self) -> bool:
         current_index = self.port_combo_box.currentIndex()
         com_port = self.port_combo_box.itemData(current_index)
         if not com_port:
-            raise ValueError("No port selected.")
+            raise ValueError
     except ValueError:
         self.ui_statusbar_message('No device selected!')
         return False
@@ -152,6 +152,7 @@ def ser_get_input(self) -> bool:
     self.capture_index = (self.capture_index + 1) % self.value_history_max
     return True
 
+
 def ser_do_calibrate(self) -> None:
     """
     Perform calibration. Capture data as normal until self.calibrating counter is zero.\n
@@ -187,11 +188,13 @@ def ser_do_calibrate(self) -> None:
         print("MIN DELTA : {}".format(min_delta))
         print("CIDX      : {}".format(self.capture_index))
 
+
 def ser_stop_capture_timer(self):
     """Stops the capture timer AND graph update timer."""
     if self.capture_timer.isActive():
         self.graph_stop_timer()
         self.capture_timer.stop()
+
 
 def ser_start_capture_timer(self):
     """Starts the capture timer AND graph update timer."""
