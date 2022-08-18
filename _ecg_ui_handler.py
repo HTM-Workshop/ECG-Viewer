@@ -46,15 +46,21 @@ def ui_alarm_on(self, text):
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: red }")
     self.alarm_text.setText(text)
+
+    
 def ui_alarm_off(self):
     """Clear alert box."""
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
+
+
 def ui_set_message(self, text):
     """Display status message in alert box."""
     self.alarm_text.setText("")
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
     self.alarm_text.setText(text)
+
+    
 def ui_clear_message(self):
     """Clear alert box."""
     self.alarm_window.setStyleSheet("QFrame { background-color: white }")
@@ -72,6 +78,14 @@ def ui_display_error_message(self, title: str, msg: str) -> None:
     error_message.setWindowTitle(title)
     error_message.setText(msg)
     error_message.exec_()
+
+
+def ui_statusbar_message(self, msg) -> None:
+    """
+    Display a message in the status bar.
+    """
+    
+    self.statusBar.showMessage(str(msg))
 
 
 # toggle capture on or off
