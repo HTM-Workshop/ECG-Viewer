@@ -43,7 +43,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.0.0"
+VERSION = "v2.0.1 - DEVBUILD"
 
 
 # About window. The class is so tiny it might as well be defined here.
@@ -70,10 +70,10 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         ser_stop_capture_timer, ser_check_device, ser_do_calibrate
     from _ecg_grapher import graph_draw, graph_fit, graph_bold_toggle, graph_restart_timer, \
         graph_stop_timer, graph_start_timer
-    from _ecg_math import math_detect_peaks, math_update_hr
+    from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
     from _ecg_ui_handler import ui_alarm_on, ui_alarm_off, ui_set_message, ui_clear_message, ui_force_invert, \
         ui_run_toggle, ui_export_data_raw, ui_export_data_png, ui_export_data_csv, ui_show_about, \
-        ui_display_error_message, ui_set_tooltips
+        ui_display_error_message, ui_set_tooltips, ui_statusbar_message
 
     def __init__(self, *args, **kwargs):
         super(ECGViewer, self).__init__(*args, **kwargs)
@@ -191,6 +191,8 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
             self.graph_fit()
             self.math_detect_peaks()
             self.math_update_hr()
+            sps = self.math_calc_sps()
+            self.ui_statusbar_message("Samples per second: {}".format(sps))
 
 
     def reset(self) -> None:
@@ -239,6 +241,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         self.value_history_max = self.WindowSizeGroup.checkedAction().data()
+        self.graph_fit()
         self.reset()
 
 @debug_timer

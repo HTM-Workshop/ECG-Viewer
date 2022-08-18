@@ -74,6 +74,14 @@ def ui_display_error_message(self, title: str, msg: str) -> None:
     error_message.exec_()
 
 
+def ui_statusbar_message(self, msg) -> None:
+    """
+    Display a message in the status bar.
+    """
+    
+    self.statusBar.showMessage(str(msg))
+
+
 # toggle capture on or off
 def ui_run_toggle(self):
     """Toggles the capture process on or off. Should be called by a single run/stop function."""

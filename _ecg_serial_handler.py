@@ -24,6 +24,7 @@ import serial.tools.list_ports
 import statistics as stat
 from debug import debug_timer
 
+
 # refresh available devices, store in dropdown menu storage
 def ser_com_refresh(self):
     """
@@ -45,7 +46,7 @@ def ser_check_device(self) -> bool:
     Returns False if device is not responding or is giving improper responses.
     """
 
-    self.statusBar.showMessage('Connecting...')
+    self.ui_statusbar_message('Connecting...')
     max_attempts = 10
     device_ok = False
     while max_attempts > 0 and not device_ok:
@@ -80,7 +81,7 @@ def ser_com_connect(self) -> bool:
         if not com_port:
             raise ValueError("No port selected.")
     except ValueError:
-        self.statusBar.showMessage('No device selected!')
+        self.ui_statusbar_message('No device selected!')
         return False
     except TypeError as e:
         self.ui_display_error_message("Invalid port type", str(e))

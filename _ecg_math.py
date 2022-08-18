@@ -22,6 +22,15 @@ import math
 import statistics as stat
 from scipy import signal
 
+def math_calc_sps(self) -> int:
+    """
+    Returns the samples per second based on the capture period time range.
+    This should be called a the end of the capture period.
+    """
+
+    sample_time_range = self.time_history[-1] - self.time_history[0]
+    return math.floor((self.value_history_max / sample_time_range) * 1000)
+    
 
 def math_detect_peaks(self) -> float:
     """
