@@ -118,6 +118,11 @@ def ui_show_about(self):
     self.about_window.show()
 
 
+def ui_show_license(self):
+    """Shows the License dialog window"""
+    self.license_window.show()
+
+
 def ui_export_data_raw(self):
     """
     Exports a RAW binary data file of the currently recorded information, pre-filtered.\n
