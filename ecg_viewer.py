@@ -73,7 +73,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
     from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
     from _ecg_ui_handler import ui_alarm_on, ui_alarm_off, ui_set_message, ui_clear_message, ui_force_invert, \
         ui_run_toggle, ui_export_data_raw, ui_export_data_png, ui_export_data_csv, ui_show_about, \
-        ui_display_error_message, ui_set_tooltips, ui_statusbar_message
+        ui_display_error_message, ui_set_tooltips, ui_statusbar_message, ui_holdoff_box_update
 
     def __init__(self, *args, **kwargs):
         super(ECGViewer, self).__init__(*args, **kwargs)
@@ -128,6 +128,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionStart_Stop.triggered.connect(self.ui_run_toggle)
         self.actionStart_Stop.setDisabled(True)
         self.actionReset.triggered.connect(self.reset)
+        self.actionAuto_Holdoff.triggered.connect(self.ui_holdoff_box_update)
 
         # set tooltips
         self.ui_set_tooltips()

@@ -422,6 +422,9 @@
          </item>
          <item>
           <widget class="QSpinBox" name="holdoff_box">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>172</width>
@@ -699,6 +702,7 @@
     <addaction name="actionReset"/>
     <addaction name="separator"/>
     <addaction name="menuWindow_Size"/>
+    <addaction name="actionBPM_Averaging"/>
     <addaction name="actionAuto_Holdoff"/>
    </widget>
    <addaction name="menuFile"/>
@@ -772,6 +776,17 @@
    </property>
    <property name="text">
     <string>Auto Holdoff</string>
+   </property>
+  </action>
+  <action name="actionBPM_Averaging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>BPM Averaging</string>
    </property>
   </action>
   <actiongroup name="WindowSizeGroup">

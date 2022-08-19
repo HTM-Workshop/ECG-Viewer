@@ -43,7 +43,7 @@ def math_detect_peaks(self) -> float:
     modifies:  stores index of peaks in self.peaks
     returns :  center (not average) of recorded values
     """
-    
+
     vmax: int = self.value_history.max()
     vmin: int = self.value_history.min()
     center: float = (vmax - (vmax - vmin) / 2)
@@ -77,7 +77,10 @@ def math_update_hr(self) -> None:
         self.rate_alarm_history.pop(0)
 
         # display rate as average of rate history
-        self.lcdNumber.display(math.floor(stat.mean(self.rate_alarm_history)))
+        if self.actionBPM_Averaging.isChecked():
+            self.lcdNumber.display(math.floor(stat.mean(self.rate_alarm_history)))
+        else:
+            self.lcdNumber.display(math.floor(rate))
 
         # check if rate alarm has been tripped or reset, this should probably be moved
         avg = math.floor(stat.mean(self.rate_alarm_history))
