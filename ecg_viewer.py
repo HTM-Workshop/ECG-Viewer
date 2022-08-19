@@ -39,6 +39,7 @@ from pyqtgraph.console.template_pyqt5 import *
 from debug import debug_timer
 from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
+from license import Ui_license_window
 import images_qr        # required for icon to work properly
 
 
@@ -60,6 +61,18 @@ class AboutWindow(QtWidgets.QDialog, Ui_about_window):
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
 
 
+# Same for license window
+class LicenseWindow(QtWidgets.QDialog, Ui_license_window):
+    """
+    License dialog box window.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(LicenseWindow, self).__init__(*args, **kwargs)
+        self.setupUi(self)
+        self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
+
+
 class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
     """
     Main class for the ECG Viewer application.
@@ -73,12 +86,13 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
     from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
     from _ecg_ui_handler import ui_alarm_on, ui_alarm_off, ui_set_message, ui_clear_message, ui_force_invert, \
         ui_run_toggle, ui_export_data_raw, ui_export_data_png, ui_export_data_csv, ui_show_about, \
-        ui_display_error_message, ui_set_tooltips, ui_statusbar_message, ui_holdoff_box_update
+        ui_display_error_message, ui_set_tooltips, ui_statusbar_message, ui_holdoff_box_update, ui_show_license
 
     def __init__(self, *args, **kwargs):
         super(ECGViewer, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.about_window = AboutWindow()
+        self.license_window = LicenseWindow()
         self.graph.disableAutoRange()
         self.setWindowTitle("ECG Viewer - " + VERSION)
         self.setWindowIcon(QtGui.QIcon(':/icon/icon.png'))
@@ -122,6 +136,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionPNG.triggered.connect(self.ui_export_data_png)
         self.actionCSV.triggered.connect(self.ui_export_data_csv)
         self.actionAbout.triggered.connect(self.ui_show_about)
+        self.actionLicense.triggered.connect(self.ui_show_license)
         self.actionGet_Source_Code.triggered.connect(self.open_source_code_webpage)
         self.actionQuit.triggered.connect(sys.exit)
         self.WindowSizeGroup.triggered.connect(self.window_size_update)

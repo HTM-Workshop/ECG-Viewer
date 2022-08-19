@@ -675,6 +675,8 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionLicense"/>
+    <addaction name="separator"/>
     <addaction name="actionGet_Source_Code"/>
    </widget>
    <widget class="QMenu" name="menuExport_2">
@@ -787,6 +789,11 @@
    </property>
    <property name="text">
     <string>BPM Averaging</string>
+   </property>
+  </action>
+  <action name="actionLicense">
+   <property name="text">
+    <string>License</string>
    </property>
   </action>
   <actiongroup name="WindowSizeGroup">

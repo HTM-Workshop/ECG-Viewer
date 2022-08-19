@@ -21,6 +21,7 @@ rebuild:
 build-ui:
 	pyuic5 ecg_viewer_window.ui > ecg_viewer_window.py
 	pyuic5 about.ui > about.py
+	pyuic5 license.ui > license.py
 ve-build:
 	pip3 install virtualenv --user
 	virtualenv ecg_viewer_build
