@@ -699,6 +699,7 @@
     <addaction name="actionReset"/>
     <addaction name="separator"/>
     <addaction name="menuWindow_Size"/>
+    <addaction name="actionAuto_Holdoff"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuCapture"/>
@@ -760,6 +761,17 @@
   <action name="actionStart_Stop">
    <property name="text">
     <string>Start / Stop</string>
+   </property>
+  </action>
+  <action name="actionAuto_Holdoff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Holdoff</string>
    </property>
   </action>
   <actiongroup name="WindowSizeGroup">

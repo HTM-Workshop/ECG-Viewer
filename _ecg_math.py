@@ -43,7 +43,7 @@ def math_detect_peaks(self) -> float:
     modifies:  stores index of peaks in self.peaks
     returns :  center (not average) of recorded values
     """
-
+    
     vmax: int = self.value_history.max()
     vmin: int = self.value_history.min()
     center: float = (vmax - (vmax - vmin) / 2)
