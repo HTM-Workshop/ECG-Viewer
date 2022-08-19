@@ -40,6 +40,17 @@ def ui_set_tooltips(self):
     self.actionBold_Line.setToolTip("Draws graph with thicker line. Reduces visual accuracy. Slower.")
 
 
+def ui_holdoff_box_update(self):
+    """
+    Enables/disables the holdoff box depending on if the Auto Holdoff menu option
+    is checked or not
+    """
+
+    if self.actionAuto_Holdoff.isChecked():
+        self.holdoff_box.setDisabled(True)
+    else:
+        self.holdoff_box.setDisabled(False)
+
 # message box methods
 def ui_alarm_on(self, text):
     """Display alarm text in alert box."""
