@@ -44,7 +44,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.1.0 - PREBUILD"
+VERSION = "v2.1.0"
 
 
 # About window. The class is so tiny it might as well be defined here.
