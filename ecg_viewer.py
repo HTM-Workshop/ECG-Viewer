@@ -43,7 +43,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.0.1"
+VERSION = "v2.1.0 - PREBUILD"
 
 
 # About window. The class is so tiny it might as well be defined here.
@@ -143,6 +143,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.invert_modifier = 1
         self.calibrating = self.value_history_max
         self.peaks = list()
+        self.holdoff_factor = 0.31
 
         # graph properties
         self.graph.showGrid(True, True, alpha = 0.5)
@@ -188,10 +189,13 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         # to zero. When this happens, fit the graph, find peaks, and update the heart rate
         if(self.capture_index == 0 and reading_ok):
             self.ser.reset_input_buffer()
+            sps = self.math_calc_sps()
+            if self.actionAuto_Holdoff.isChecked():
+                holdoff = round(sps * self.holdoff_factor)
+                self.holdoff_box.setValue(holdoff)
             self.graph_fit()
             self.math_detect_peaks()
             self.math_update_hr()
-            sps = self.math_calc_sps()
             self.ui_statusbar_message("Samples per second: {}".format(sps))
 
 
