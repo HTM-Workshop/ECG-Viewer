@@ -103,7 +103,7 @@ def ser_com_connect(self) -> bool:
         return False
 
     # device is connected and test has passed
-    print("Connection to {} succesful.".format(com_port))
+    print(f"Connection to {com_port} succesful.")
     return True
 
 
@@ -122,7 +122,7 @@ def ser_get_input(self) -> bool:
         print(e)
         print(self.ser.isOpen())
         self.connect_toggle()
-        err_msg = "Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{}".format(e)
+        err_msg = f"Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{e}"
         self.ui_display_error_message("Connection Error", err_msg)
         return False
 
@@ -181,12 +181,12 @@ def ser_do_calibrate(self) -> None:
             print("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
         print("DYNAMIC CALIBRATION INFO:")
-        print("RANGE     : {} - {}".format(window, (window, self.value_history_max - window)))
-        print("PK SAMPLES: {}".format(peak_samples))
-        print("MEAN      : {}".format(period_mean))
-        print("MAX DELTA : {}".format(max_delta))
-        print("MIN DELTA : {}".format(min_delta))
-        print("CIDX      : {}".format(self.capture_index))
+        print(f"RANGE     : {window} - {self.value_history_max - window}")
+        print(f"PK SAMPLES: {peak_samples}")
+        print(f"MEAN      : {period_mean}")
+        print(f"MAX DELTA : {max_delta}")
+        print(f"MIN DELTA : {min_delta}")
+        print(f"CIDX      : {self.capture_index}")
 
 
 def ser_stop_capture_timer(self):

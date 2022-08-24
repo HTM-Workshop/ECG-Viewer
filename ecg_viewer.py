@@ -212,7 +212,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
             self.graph_fit()
             self.math_detect_peaks()
             self.math_update_hr()
-            self.ui_statusbar_message("Samples per second: {}".format(sps))
+            self.ui_statusbar_message(f"Samples per second: {sps}")
 
 
     def reset(self) -> None:
@@ -273,8 +273,7 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
     """
 
     screen = app.primaryScreen().size()
-    size_string = str(screen.width()) + " x " + str(screen.height())
-    print("Detected resolution: " + size_string)
+    print(f"Detected resolution: {screen.width()}x{screen.height()}")
     if(screen.width() < 1024 or screen.height() < 768):
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Notice")

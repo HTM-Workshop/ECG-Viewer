@@ -27,7 +27,7 @@ def debug_timer(func: Callable) -> Callable:
         init_time = time()
         ret = func(*args)
         total_time = time() - init_time
-        print("{} : {}".format(func.__name__, total_time), flush = True)
+        print(f"{func.__name__} : {total_time}", flush = True)
         return ret
     return timer
 
