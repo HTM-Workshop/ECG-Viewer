@@ -44,7 +44,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.1.0"
+VERSION = "v2.1.1"
 
 
 # About window. The class is so tiny it might as well be defined here.
@@ -183,7 +183,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         Opens a link to the project source code.
         """
         try:
-            wb_open("https://github.com/BB121-LAB/ecg_viewer", autoraise = True)
+            wb_open("https://github.com/HTM-Workshop/ECG-Viewer", autoraise = True)
         except wb_error as error:
             error_msg = "Could not open URL.\n\n" + error
             self.ui_display_error_message("Open URL Error", error_msg)
