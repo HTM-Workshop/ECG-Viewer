@@ -44,7 +44,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.1.1"
+VERSION = "v2.1.2"
 
 
 # About window. The class is so tiny it might as well be defined here.
@@ -273,7 +273,8 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
     """
 
     screen = app.primaryScreen().size()
-    print(f"Detected resolution: {screen.width()}x{screen.height()}")
+    size_string = f"{screen.width()}x{screen.height()}"
+    print(f"Detected resolution: {size_string}")
     if(screen.width() < 1024 or screen.height() < 768):
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Notice")
