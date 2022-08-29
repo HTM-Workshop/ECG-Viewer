@@ -87,7 +87,7 @@ def ui_display_error_message(self, title: str, msg: str) -> None:
     """Display a generic error message to the user."""
     error_message = QtWidgets.QMessageBox()
     error_message.setWindowTitle(title)
-    error_message.setText(msg)
+    error_message.setText(str(msg))
     error_message.exec_()
 
 

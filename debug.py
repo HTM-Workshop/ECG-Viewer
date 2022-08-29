@@ -18,6 +18,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
+import logging
 from typing import Callable
 
 def debug_timer(func: Callable) -> Callable:
@@ -27,7 +28,7 @@ def debug_timer(func: Callable) -> Callable:
         init_time = time()
         ret = func(*args)
         total_time = time() - init_time
-        print(f"{func.__name__} : {total_time}", flush = True)
+        logging.debug(f"TIMER: {func.__name__} : {total_time}")
         return ret
     return timer
 

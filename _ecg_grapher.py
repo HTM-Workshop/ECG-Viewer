@@ -20,6 +20,7 @@
 
 import math
 import numpy
+import logging
 import pyqtgraph as pg
 from PyQt5 import QtCore
 from scipy.signal import savgol_filter
@@ -45,7 +46,7 @@ def graph_draw(self) -> None:
         except ValueError as e:
             self.window_length_box.setValue(199)
             self.polyorder_box.setValue(7)
-            print(e)
+            logging.warning(f"Invalid filter settings: \n{e}")
             return
         self.curve.setData(numpy.arange(fdat.size), fdat, skipFiniteCheck = True)
 

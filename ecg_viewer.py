@@ -18,12 +18,14 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
+from mimetypes import init
 import os
 import sys
 import time
 import platform
 import serial
 import numpy
+import logging
 import pyqtgraph as pg
 from webbrowser import Error as wb_error
 from webbrowser import open as wb_open
@@ -80,7 +82,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from _ecg_serial_handler import ser_com_connect, ser_com_refresh, ser_get_input, ser_start_capture_timer, \
-        ser_stop_capture_timer, ser_check_device, ser_do_calibrate
+        ser_stop_capture_timer, ser_check_device, ser_do_calibrate, ser_disconnect_all
     from _ecg_grapher import graph_draw, graph_fit, graph_bold_toggle, graph_restart_timer, \
         graph_stop_timer, graph_start_timer
     from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
@@ -177,6 +179,16 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         # perform initial reset
         self.reset()
         self.ser_com_refresh()
+    
+    def __del__(self):
+        """
+        Destructor. Shutdown and close serial connections. Close logger.
+        """
+        
+        self.ser_stop_capture_timer()
+        self.ser_disconnect_all()
+        logging.info("PROGRAM EXIT")
+        logging.shutdown()
 
     def open_source_code_webpage(self):
         """
@@ -274,7 +286,7 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
 
     screen = app.primaryScreen().size()
     size_string = f"{screen.width()}x{screen.height()}"
-    print(f"Detected resolution: {size_string}")
+    logging.info(f"Detected resolution: {size_string}")
     if(screen.width() < 1024 or screen.height() < 768):
         error_message = QtWidgets.QMessageBox()
         error_message.setWindowTitle("Notice")
@@ -282,18 +294,19 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
         error_message.exec_()
 
 
-def print_sys_info() -> None:
-    """Prints system information to console."""
-    print(VERSION)
-    print(time.ctime())
-    print(platform.platform())
-    print("Python Version: " + platform.python_version())
-    print("Directory: " + os.getcwd())
-    print('-' * 80)
+def log_sys_info() -> None:
+    """Logs system info."""
+    logging.info(f"Build: {VERSION}")
+    logging.info(time.ctime())
+    logging.info(platform.platform())
+    logging.info(f"Python Version: {platform.python_version()}")
+    logging.info(f"Directory: {os.getcwd()}")
 
 
 def main():
-    print_sys_info()
+    logging.basicConfig(filename='ecg_viewer.log', level=logging.DEBUG)
+    logging.info('-' * 80)
+    log_sys_info()
     app = QtWidgets.QApplication(sys.argv)
     main_app = ECGViewer()
     main_app.show()
