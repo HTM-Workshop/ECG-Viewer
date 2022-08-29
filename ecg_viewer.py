@@ -294,15 +294,29 @@ def log_sys_info() -> None:
 
 
 def main():
-    logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w')
-    logging.info('-' * 80)
+    """
+    Main Function.
+    Starts logging system and GUI.
+    Passes control to the ECGViewer class. 
+    """
+
+    # Init logging and get system info
+    start_time = time.time()
+    lfmt = "%(levelname)s [%(funcName)s]: %(message)s"
+    logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w', format=lfmt)
+    logging.info("PROGRAM START")
     log_sys_info()
+
+    # start program
     app = QtWidgets.QApplication(sys.argv)
     main_app = ECGViewer()
     main_app.show()
     check_resolution(app)
-    ret = app.exec_()
+    ret = app.exec_()       # main loop call
+    
+    # Close program
     logging.info("PROGRAM EXIT")
+    logging.info(f"Runtime: {time.time() - start_time}")
     logging.shutdown()
     sys.exit(ret)
 
