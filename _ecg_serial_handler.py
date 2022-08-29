@@ -37,7 +37,7 @@ def ser_com_refresh(self):
     for device in available_ports:
         d_name = device.device + ": " + device.description
         self.port_combo_box.addItem(d_name, device.device)
-        logging.debug(f"Detected port: {d_name}")
+        logging.info(f"Detected port: {d_name}")
 
 
 @debug_timer
@@ -96,11 +96,12 @@ def ser_com_connect(self) -> bool:
         self.ser.open()
     except serial.serialutil.SerialException as e:
         self.ui_display_error_message("Connection Failure", e)
+        logging.warning(f"Connection Failure: {e}")
         return False
 
     # detect if device is responding properly
     if not self.ser_check_device():
-        logging.info(f"Could not connect to device: {self.ser.port}")
+        logging.info(f"Serial device check failed: {self.ser.port}")
         self.ui_display_error_message("Device Error", "Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.")
         self.ser.close()
         return False
