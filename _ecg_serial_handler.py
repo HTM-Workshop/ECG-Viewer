@@ -19,6 +19,7 @@
 #  MA 02110-1301, USA.
 
 import time
+import logging
 import serial
 import serial.tools.list_ports
 import statistics as stat
@@ -36,6 +37,7 @@ def ser_com_refresh(self):
     for device in available_ports:
         d_name = device.device + ": " + device.description
         self.port_combo_box.addItem(d_name, device.device)
+        logging.debug(f"Detected port: {d_name}")
 
 
 @debug_timer
@@ -59,7 +61,7 @@ def ser_check_device(self) -> bool:
                     device_ok = True
                     break
         except Exception as e:
-            print(e)
+            logging.debug(f"Retrying connection: {e}")
             time.sleep(1)
         max_attempts -= 1
         time.sleep(0.2)
@@ -84,8 +86,8 @@ def ser_com_connect(self) -> bool:
         self.ui_statusbar_message('No device selected!')
         return False
     except TypeError as e:
-        self.ui_display_error_message("Invalid port type", str(e))
-        print(e)
+        self.ui_display_error_message("Invalid port type", e)
+        logging.warning(e)
         return False
 
     # connect to port
@@ -93,17 +95,18 @@ def ser_com_connect(self) -> bool:
         self.ser.port = com_port
         self.ser.open()
     except serial.serialutil.SerialException as e:
-        self.ui_display_error_message("Connection Failure", str(e))
+        self.ui_display_error_message("Connection Failure", e)
         return False
 
     # detect if device is responding properly
     if not self.ser_check_device():
-        self.ui_display_error_message("Device Error", """Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.""")
+        logging.info(f"Could not connect to device: {self.ser.port}")
+        self.ui_display_error_message("Device Error", "Connected device is not responding.\n\nThis may be the incorrect device.\ Please choose a different device in the menu and try again.")
         self.ser.close()
         return False
 
     # device is connected and test has passed
-    print(f"Connection to {com_port} succesful.")
+    logging.info(f"Connection to {com_port} succesful.")
     return True
 
 
@@ -118,9 +121,8 @@ def ser_get_input(self) -> bool:
     try:
         self.ser.write('\n'.encode())
     except Exception as e:
+        logging.warn(f"Device write error: \m{e}")
         self.ser_stop_capture_timer()
-        print(e)
-        print(self.ser.isOpen())
         self.connect_toggle()
         err_msg = f"Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{e}"
         self.ui_display_error_message("Connection Error", err_msg)
@@ -176,17 +178,17 @@ def ser_do_calibrate(self) -> None:
                 if min_delta > max_delta:
                     self.invert_modifier = self.invert_modifier * -1
                     self.statusBar.showMessage('Inverting input signal')
-                    print("*** INVERTING SIGNAL ***")
+                    logging.debug("*** INVERTING SIGNAL ***")
         else:
-            print("*** NO SIGNAL DETECTED ***")
+            logging.debug("*** NO SIGNAL DETECTED ***")
         self.calibrating = -1
-        print("DYNAMIC CALIBRATION INFO:")
-        print(f"RANGE     : {window} - {self.value_history_max - window}")
-        print(f"PK SAMPLES: {peak_samples}")
-        print(f"MEAN      : {period_mean}")
-        print(f"MAX DELTA : {max_delta}")
-        print(f"MIN DELTA : {min_delta}")
-        print(f"CIDX      : {self.capture_index}")
+        logging.debug("DYNAMIC CALIBRATION INFO:")
+        logging.debug(f"RANGE     : {window} - {self.value_history_max - window}")
+        logging.debug(f"PK SAMPLES: {peak_samples}")
+        logging.debug(f"MEAN      : {period_mean}")
+        logging.debug(f"MAX DELTA : {max_delta}")
+        logging.debug(f"MIN DELTA : {min_delta}")
+        logging.debug(f"CIDX      : {self.capture_index}")
 
 
 def ser_stop_capture_timer(self):
@@ -204,3 +206,10 @@ def ser_start_capture_timer(self):
         self.graph_start_timer()
 
 
+def ser_disconnect_all(self):
+    """
+    Cleanly closes all serial connections. Should be called by destructor.
+    """
+    if self.ser.isOpen():
+        self.ser.flush()
+        self.ser.close()
