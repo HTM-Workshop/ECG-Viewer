@@ -294,7 +294,7 @@ def log_sys_info() -> None:
 
 
 def main():
-    logging.basicConfig(filename='ecg_viewer.log', level=logging.DEBUG)
+    logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO)
     logging.info('-' * 80)
     log_sys_info()
     app = QtWidgets.QApplication(sys.argv)
