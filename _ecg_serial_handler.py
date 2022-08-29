@@ -101,7 +101,7 @@ def ser_com_connect(self) -> bool:
     # detect if device is responding properly
     if not self.ser_check_device():
         logging.info(f"Could not connect to device: {self.ser.port}")
-        self.ui_display_error_message("Device Error", "Connected device is not responding.\n\nThis may be the incorrect device.\ Please choose a different device in the menu and try again.")
+        self.ui_display_error_message("Device Error", "Connected device is not responding.\n\nThis may be the incorrect device. Please choose a different device in the menu and try again.")
         self.ser.close()
         return False
 
@@ -121,7 +121,7 @@ def ser_get_input(self) -> bool:
     try:
         self.ser.write('\n'.encode())
     except Exception as e:
-        logging.warn(f"Device write error: \m{e}")
+        logging.warn(f"Device write error: {e}")
         self.ser_stop_capture_timer()
         self.connect_toggle()
         err_msg = f"Connection to Arduino lost. \nPlease check cable and click connect.\n\nError information:\n{e}"
