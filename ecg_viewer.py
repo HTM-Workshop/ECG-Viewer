@@ -82,7 +82,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # import class methods
     from _ecg_serial_handler import ser_com_connect, ser_com_refresh, ser_get_input, ser_start_capture_timer, \
-        ser_stop_capture_timer, ser_check_device, ser_do_calibrate, ser_disconnect_all
+        ser_stop_capture_timer, ser_check_device, ser_do_calibrate
     from _ecg_grapher import graph_draw, graph_fit, graph_bold_toggle, graph_restart_timer, \
         graph_stop_timer, graph_start_timer
     from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
@@ -179,16 +179,6 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         # perform initial reset
         self.reset()
         self.ser_com_refresh()
-    
-    def __del__(self):
-        """
-        Destructor. Shutdown and close serial connections. Close logger.
-        """
-        
-        self.ser_stop_capture_timer()
-        self.ser_disconnect_all()
-        logging.info("PROGRAM EXIT")
-        logging.shutdown()
 
     def open_source_code_webpage(self):
         """
@@ -311,7 +301,10 @@ def main():
     main_app = ECGViewer()
     main_app.show()
     check_resolution(app)
-    sys.exit(app.exec_())
+    ret = app.exec_()
+    logging.info("PROGRAM EXIT")
+    logging.shutdown()
+    sys.exit(ret)
 
 
 if __name__ == '__main__':

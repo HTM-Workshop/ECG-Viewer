@@ -204,12 +204,3 @@ def ser_start_capture_timer(self):
     if not self.capture_timer.isActive():
         self.capture_timer.start(self.capture_rate_ms)
         self.graph_start_timer()
-
-
-def ser_disconnect_all(self):
-    """
-    Cleanly closes all serial connections. Should be called by destructor.
-    """
-    if self.ser.isOpen():
-        self.ser.flush()
-        self.ser.close()
