@@ -87,7 +87,7 @@ def ser_com_connect(self) -> bool:
         return False
     except TypeError as e:
         self.ui_display_error_message("Invalid port type", e)
-        logging.warning(e)
+        logging.error(e)
         return False
 
     # connect to port
