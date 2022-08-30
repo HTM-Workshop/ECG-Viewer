@@ -45,7 +45,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.2.0-b.1 - DEVBUILD"
+VERSION = "v2.2.0"
 
 
 # About window. The class is so tiny it might as well be defined here.
