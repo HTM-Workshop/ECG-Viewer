@@ -132,18 +132,25 @@ def ser_get_input(self) -> bool:
     # get response from Arduino, terminated by newline character
     buf = ''
 
-    # read and discard incoming bytes until the start character is found
-    while self.ser.inWaiting() > 0:
-        chr = str(self.ser.read().decode())
-        if chr == '$':
-            break
+    try:
+        # read and discard incoming bytes until the start character is found
+        while self.ser.inWaiting() > 0:
+            chr = str(self.ser.read().decode())
+            if chr == '$':
+                break
 
-    # read characters until newline is detected, this is faster than serial's read_until
-    while self.ser.inWaiting() > 0:
-        chr = str(self.ser.read().decode())
-        if chr == '\n':
-            break
-        buf = buf + chr
+        # read characters until newline is detected, this is faster than serial's read_until
+        while self.ser.inWaiting() > 0:
+            chr = str(self.ser.read().decode())
+            if chr == '\n':
+                break
+            buf = buf + chr
+        
+    # this may occur during str conversion if the device is disconnected abrutply
+    except UnicodeDecodeError as err_msg:
+        logging.error(err_msg)
+        return False
+
 
     # all measurements are exactly three characters in size
     if len(buf) != 3:
