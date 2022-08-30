@@ -303,7 +303,15 @@ def main():
     # Init logging and get system info
     start_time = time.time()
     lfmt = "%(levelname)s [%(funcName)s]: %(message)s"
-    logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w', format=lfmt)
+    try:
+        if sys.platform == 'darwin':
+            log_dir = os.path.expanduser('~/Library/Logs/')
+            log_path = log_dir + "ecg_viewer.log"
+            logging.basicConfig(filename=log_path, level=logging.INFO, filemode='w', format=lfmt)
+        else:
+            logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w', format=lfmt)
+    except OSError as e:
+        logging.basicConfig(level=logging.INFO, format=lfmt)
     logging.info("PROGRAM START")
     log_sys_info()
 
