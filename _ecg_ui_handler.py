@@ -92,7 +92,7 @@ def ui_display_error_message(self, title: str, msg: str) -> None:
     error_message.exec_()
 
 
-def ui_statusbar_message(self, msg) -> None:
+def ui_statusbar_message(self, msg: str) -> None:
     """
     Display a message in the status bar.
     """
@@ -101,7 +101,7 @@ def ui_statusbar_message(self, msg) -> None:
 
 
 # toggle capture on or off
-def ui_run_toggle(self):
+def ui_run_toggle(self) -> None:
     """Toggles the capture process on or off. Should be called by a single run/stop function."""
     assert self.ser.isOpen()
     if(self.capture_timer.isActive()):
