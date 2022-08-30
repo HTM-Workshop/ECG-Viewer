@@ -56,10 +56,11 @@ def math_detect_peaks(self) -> float:
     return center
 
 
-def math_update_hr(self) -> None:
+def math_calc_hr(self) -> tuple[int, int]:
     """
     Update the heart rate LCD reading.\n
-    Converts the average time between peaks to frequency.
+    Converts the average time between peaks to frequency.\n
+    Returns tuple: (instantanious_rate, average_rate)
     """
 
     times = []
@@ -68,13 +69,22 @@ def math_update_hr(self) -> None:
             if i:
                 last = self.time_history[self.peaks[i - 1]]
                 times.append(self.time_history[value] - last)
-    if len(times) > 1:
+    if len(times):
         freq = (1 / (sum(times) / len(times)))
         rate = freq * 1000 * 60
 
         # update heart rate history
-        self.rate_alarm_history.append(rate)
-        self.rate_alarm_history.pop(0)
+        self.rate_history.append(rate)
+        self.rate_history.pop(0)
+
+        # return instantainous rate and averaged rate
+        rate = round(rate)
+        avg = round(stat.mean(self.rate_history))
+        return (rate, avg)
+    else:
+        return (0, 0)
+
+"""
 
         # display rate as average of rate history
         if self.actionBPM_Averaging.isChecked():
@@ -82,8 +92,6 @@ def math_update_hr(self) -> None:
         else:
             self.lcdNumber.display(math.floor(rate))
 
-        # check if rate alarm has been tripped or reset, this should probably be moved
-        avg = math.floor(stat.mean(self.rate_alarm_history))
 
         self.ui_clear_message()
         if avg > self.high_limit_box.value():
@@ -99,3 +107,4 @@ def math_update_hr(self) -> None:
     else:
         self.lcdNumber.display(0)
         self.ui_set_message("SIGNAL LOSS")
+        """

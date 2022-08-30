@@ -84,7 +84,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         ser_stop_capture_timer, ser_check_device, ser_do_calibrate
     from _ecg_grapher import graph_draw, graph_fit, graph_bold_toggle, graph_restart_timer, \
         graph_stop_timer, graph_start_timer
-    from _ecg_math import math_detect_peaks, math_update_hr, math_calc_sps
+    from _ecg_math import math_detect_peaks, math_calc_hr, math_calc_sps
     from _ecg_ui_handler import ui_alarm_on, ui_alarm_off, ui_set_message, ui_clear_message, ui_force_invert, \
         ui_run_toggle, ui_export_data_raw, ui_export_data_png, ui_export_data_csv, ui_show_about, \
         ui_display_error_message, ui_set_tooltips, ui_statusbar_message, ui_holdoff_box_update, ui_show_license
@@ -169,10 +169,12 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.red_pen = pg.mkPen('r', width = 2)
         self.yellow_pen = pg.mkPen('y')
 
+        # ecg rate average
+        self.rate_history = [80] * 3
+
         # ecg rate alarm limits
         self.rate_alarm_max = 120
         self.rate_alarm_min = 40
-        self.rate_alarm_history = [80] * 3
         self.rate_alarm_active = False
 
         # perform initial reset
@@ -213,8 +215,35 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.holdoff_box.setValue(holdoff)
             self.graph_fit()
             self.math_detect_peaks()
-            self.math_update_hr()
+            inst_rate, avg_rate = self.math_calc_hr()
+            self.update_hr(inst_rate, avg_rate)
             self.ui_statusbar_message(f"Samples per second: {sps}")
+
+
+    def update_hr(self, inst_rate: int, avg_rate: int) -> None:
+        """
+        Updates the UI elements/alarms using the provided heart rate information.
+        """
+        
+        if inst_rate > 0:
+            if self.actionBPM_Averaging.isChecked():
+                self.lcdNumber.display(avg_rate)
+            else:
+                self.lcdNumber.display(inst_rate)
+            self.ui_clear_message()
+            if avg_rate > self.high_limit_box.value():
+                self.rate_alarm_active = True
+                self.ui_alarm_on("MAX RATE ALARM")
+            if self.low_limit_box.value() > avg_rate:
+                self.rate_alarm_active = True
+                self.ui_alarm_on("MIN RATE ALARM")
+            if self.rate_alarm_active:
+                if(avg_rate <= self.high_limit_box.value() and self.low_limit_box.value() <= avg_rate):
+                    self.rate_alarm_active = False
+                    self.ui_alarm_off()            
+        else:
+            self.lcdNumber.display(0)
+            self.ui_set_message("SIGNAL LOSS")
 
 
     def reset(self) -> None:
