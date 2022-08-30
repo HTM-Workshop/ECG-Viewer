@@ -18,6 +18,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
+from cmath import log
 from mimetypes import init
 import os
 import sys
@@ -46,7 +47,7 @@ import images_qr        # required for icon to work properly
 
 
 # String used in the title-bar and about window
-VERSION = "v2.1.2"
+VERSION = "v2.2.0-b.1 - DEVBUILD"
 
 
 # About window. The class is so tiny it might as well be defined here.
@@ -188,6 +189,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
             wb_open("https://github.com/HTM-Workshop/ECG-Viewer", autoraise = True)
         except wb_error as error:
             error_msg = "Could not open URL.\n\n" + error
+            logging.warning(error_msg)
             self.ui_display_error_message("Open URL Error", error_msg)
 
 
@@ -304,6 +306,9 @@ def main():
     start_time = time.time()
     lfmt = "%(levelname)s [%(funcName)s]: %(message)s"
     try:
+        # When compiled as .app file on Mac, sandboxing will have the logical working directory '/'
+        # meaning creating logfiles in the same directory will fail. We'll need to redirect the 
+        # log output to the standard logfile location for user apps.
         if sys.platform == 'darwin':
             log_dir = os.path.expanduser('~/Library/Logs/')
             log_path = log_dir + "ecg_viewer.log"
@@ -312,6 +317,7 @@ def main():
             logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w', format=lfmt)
     except OSError as e:
         logging.basicConfig(level=logging.INFO, format=lfmt)
+        logging.error(e)
     logging.info("PROGRAM START")
     log_sys_info()
 

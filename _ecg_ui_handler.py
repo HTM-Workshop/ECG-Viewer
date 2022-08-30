@@ -20,6 +20,7 @@
 
 import csv
 import time
+import logging
 import pyqtgraph.exporters
 from PyQt5 import QtWidgets, QtCore
 
@@ -144,7 +145,8 @@ def ui_export_data_raw(self):
             f.close()
         except Exception as e:
             self.ui_display_error_message("Export Error", e)
-    if(capture_running):
+            logging.warn(e)
+    if capture_running:
         self.ser_start_capture_timer()
 
 
@@ -166,7 +168,8 @@ def ui_export_data_png(self):
             exporter.export(filename)
         except Exception as e:
             self.ui_display_error_message("Export Error", e)
-    if(capture_running):
+            logging.warn(e)
+    if capture_running:
         self.ser_start_capture_timer()
 
 
@@ -190,5 +193,6 @@ def ui_export_data_csv(self):
             csv_file.close()
         except Exception as e:
             self.ui_display_error_message("Export Error", e)
-    if(capture_running):
+            logging.warn(e)
+    if capture_running:
         self.ser_start_capture_timer()
