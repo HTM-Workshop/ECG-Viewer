@@ -131,7 +131,6 @@ def ser_get_input(self) -> bool:
 
     # get response from Arduino, terminated by newline character
     buf = ''
-
     try:
         # read and discard incoming bytes until the start character is found
         while self.ser.inWaiting() > 0:
@@ -145,10 +144,13 @@ def ser_get_input(self) -> bool:
             if chr == '\n':
                 break
             buf = buf + chr
-        
+    # disconnecting during inWaiting() may throw this
+    except OSError as err_msg:
+        logging.warn(err_msg)
+        return False
     # this may occur during str conversion if the device is disconnected abrutply
     except UnicodeDecodeError as err_msg:
-        logging.error(err_msg)
+        logging.warn(err_msg)
         return False
 
 

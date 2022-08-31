@@ -25,6 +25,7 @@ import platform
 import serial
 import numpy
 import logging
+import traceback
 import pyqtgraph as pg
 from webbrowser import Error as wb_error
 from webbrowser import open as wb_open
@@ -150,7 +151,7 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ui_set_tooltips()
 
         # Serial Variables
-        self.ser: serial.Serial = serial.Serial(baudrate = 115200)
+        self.ser: serial.Serial = serial.Serial(baudrate = 115200, timeout = 1, write_timeout = 1)
 
         # data variables
         self.current_reading = 0
@@ -277,8 +278,16 @@ class ECGViewer(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.reset()
                 self.ser_start_capture_timer()
         else:
+            try:
+                self.ser.close()
+            except OSError as err_msg:
+                # On sudden disconnect, this may throw a OSError 
+                # For now, delete and reinstantiate the serial object
+                logging.error(err_msg)
+                del self.ser
+                self.ser = serial.Serial(baudrate = 115200, timeout = 1, write_timeout = 1)
+
             self.ser_stop_capture_timer()
-            self.ser.close()
             self.button_refresh.setDisabled(False)
             self.button_run.setDisabled(True)
             self.actionStart_Stop.setDisabled(True)
@@ -322,6 +331,12 @@ def log_sys_info() -> None:
     logging.info(f"Directory: {os.getcwd()}")
 
 
+def exception_handler_hook(ex_type, ex_val, ex_tb):
+    """Extend the exception handler to log unhandled exceptions"""
+    logging.critical("Unhandled exception: ", exc_info = (ex_type, ex_val, ex_tb))
+    print(''.join(traceback.format_exception(ex_type, ex_val, ex_tb)))
+
+
 def main():
     """
     Main Function.
@@ -347,6 +362,7 @@ def main():
         logging.error(e)
     logging.info("PROGRAM START")
     log_sys_info()
+    sys.excepthook = exception_handler_hook
 
     # start program
     app = QtWidgets.QApplication(sys.argv)
