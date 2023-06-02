@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 #            ECG Viewer
-#   Written by Kevin Williams - 2022
+#   Written by Kevin Williams - 2022-2023
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,24 +18,26 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
-import os
 import sys
 import time
-import platform
 import serial
 import numpy
 import logging
-import traceback
+import platform
 import pyqtgraph as pg
 from webbrowser import Error as wb_error
 from webbrowser import open as wb_open
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 # manual includes to fix occasional compile problem
-from pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt5 import *
-from pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5 import *
-from pyqtgraph.imageview.ImageViewTemplate_pyqt5 import *
-from pyqtgraph.console.template_pyqt5 import *
+if platform.platform in ["win32", "darwin"]:
+    try:
+        from pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt5 import *
+        from pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt5 import *
+        from pyqtgraph.imageview.ImageViewTemplate_pyqt5 import *
+        from pyqtgraph.console.template_pyqt5 import *
+    except:
+        pass
 
 # import locals
 from debug import debug_timer
@@ -43,11 +45,12 @@ from ecg_viewer_window import Ui_MainWindow
 from about import Ui_about_window
 from license import Ui_license_window
 import images_qr        # required for icon to work properly
+import log_system
 
 
 # String used in the title-bar and about window
-VERSION = "v2.2.1"
-
+VERSION = "v2.2.2"
+LOG_LEVEL = logging.INFO
 
 # About window. The class is so tiny it might as well be defined here.
 class AboutWindow(QtWidgets.QDialog, Ui_about_window):
@@ -322,19 +325,6 @@ def check_resolution(app: QtWidgets.QApplication) -> None:
         error_message.exec_()
 
 
-def log_sys_info() -> None:
-    """Logs system info."""
-    logging.info(f"Build: {VERSION}")
-    logging.info(time.ctime())
-    logging.info(platform.platform())
-    logging.info(f"Python Version: {platform.python_version()}")
-    logging.info(f"Directory: {os.getcwd()}")
-
-
-def exception_handler_hook(ex_type, ex_val, ex_tb):
-    """Extend the exception handler to log unhandled exceptions"""
-    logging.critical("Unhandled exception: ", exc_info = (ex_type, ex_val, ex_tb))
-    print(''.join(traceback.format_exception(ex_type, ex_val, ex_tb)))
 
 
 def main():
@@ -344,25 +334,9 @@ def main():
     Passes control to the ECGViewer class. 
     """
 
-    # Init logging and get system info
+    # Init logging
+    log_system.init_logging()
     start_time = time.time()
-    lfmt = "%(levelname)s [%(funcName)s]: %(message)s"
-    try:
-        # When compiled as .app file on Mac, sandboxing will have the logical working directory '/'
-        # meaning creating logfiles in the same directory will fail. We'll need to redirect the 
-        # log output to the standard logfile location for user apps.
-        if sys.platform == 'darwin':
-            log_dir = os.path.expanduser('~/Library/Logs/')
-            log_path = log_dir + "ecg_viewer.log"
-            logging.basicConfig(filename=log_path, level=logging.INFO, filemode='w', format=lfmt)
-        else:
-            logging.basicConfig(filename='ecg_viewer.log', level=logging.INFO, filemode='w', format=lfmt)
-    except OSError as e:
-        logging.basicConfig(level=logging.INFO, format=lfmt)
-        logging.error(e)
-    logging.info("PROGRAM START")
-    log_sys_info()
-    sys.excepthook = exception_handler_hook
 
     # start program
     app = QtWidgets.QApplication(sys.argv)
