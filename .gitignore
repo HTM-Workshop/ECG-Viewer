@@ -13,3 +13,4 @@ ECG*.png
 *.csv
 export/
 *.log
+.DS_Store
